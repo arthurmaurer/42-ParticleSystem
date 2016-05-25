@@ -1,10 +1,9 @@
 
-void kernel test_kernel(global float3 * particles)
+void kernel test_kernel(global float * A)
 {
-	int		i = get_global_id(0);
-	float3	particle = particles[i];
+	int		i = get_global_id(0) * 3;
 
-	particle.x = 0;
-	particle.y = 0;
-	particle.z = 0;
+	A[i] = 0;
+	A[i + 1] = 0;
+	A[i + 2] = 0;
 }

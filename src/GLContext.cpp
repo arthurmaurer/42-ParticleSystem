@@ -53,7 +53,7 @@ void				GLContext::render(void * ptr) const
 
 std::ostream &		operator<<(std::ostream & os, const GLContext & gl)
 {
-	os << glGetString(GL_VERSION) << std::endl;
+	os << glGetString(GL_VERSION);
 
 	return os;
 }

@@ -1,7 +1,6 @@
 
 #pragma once
 
-#define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.hpp>
 #include <iostream>
 #include <map>
@@ -11,7 +10,7 @@ class CLContext
 public:
 	typedef std::map<std::string, cl::Kernel>	KernelMap;
 
-	CLContext();
+	CLContext(cl::Platform & platform, cl::Device & device);
 	~CLContext();
 
 	cl::Platform			platform;

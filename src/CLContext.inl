@@ -11,7 +11,7 @@ static cl::Platform	__getDefaultPlatform()
 	for (auto i : platforms)
 		std::cout << i.getInfo<CL_PLATFORM_NAME>() << std::endl;
 
-	return platforms[0];
+	return platforms[1];
 }
 
 static cl::Device	__getDefaultDevice(const cl::Platform & platform)
@@ -26,5 +26,5 @@ static cl::Device	__getDefaultDevice(const cl::Platform & platform)
 	for (auto i : devices)
 		std::cout << i.getInfo<CL_DEVICE_NAME>() << std::endl;
 
-	return devices[1];
+	return devices[0];
 }

@@ -10,10 +10,10 @@ class ShaderProgram;
 class ParticleSystem
 {
 public:
-	ParticleSystem();
+	ParticleSystem(GLContext & gl, CLContext & cl);
 	~ParticleSystem();
 
-	CLContext *		cl;
-	GLContext *		gl;
+	CLContext &		cl;
+	GLContext &		gl;
 	ShaderProgram *	program;
 };

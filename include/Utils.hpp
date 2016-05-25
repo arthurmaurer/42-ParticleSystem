@@ -6,7 +6,6 @@
 class Utils
 {
 public:
-	static void			die(const std::string & message);
 	static std::string	readFile(const std::string & path);
-	static std::string	formatString(const char * formatStr, ...);
+	static void			die(const char * format, ...);
 };

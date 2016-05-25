@@ -2,18 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <stdarg.h>
+#include <cstring>
+#include <cstdarg>
+#include <cstdio>
 
 #include "Utils.hpp"
 
 #include "Utils.inl"
-
-void		Utils::die(const std::string & message)
-{
-	std::cout << message << std::endl;
-	system("pause");
-	exit(EXIT_FAILURE);
-}
 
 std::string	Utils::readFile(const std::string & path)
 {
@@ -21,26 +16,21 @@ std::string	Utils::readFile(const std::string & path)
 	std::stringstream	ss;
 
 	if (!file.good())
-	{
-		Utils::die(Utils::formatString(
-			"The script file \"$\" can not be opened.",
-			path.c_str()
-		));
-	}
+		Utils::die("The script file \"$\" can not be opened.", path.c_str());
 
 	ss << file.rdbuf();
 
 	return ss.str();
 }
 
-std::string		Utils::formatString(const char * formatStr, ...)
+void		Utils::die(const char * format, ...)
 {
-	std::string		out;
-	va_list			args;
+	va_list	args;
 
-	va_start(args, formatStr);
-	out = __formatString(formatStr, args);
+	va_start(args, format);
+	vprintf(format, args);
 	va_end(args);
 
-	return out;
+	system("pause");
+	exit(EXIT_FAILURE);
 }

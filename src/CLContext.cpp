@@ -12,9 +12,9 @@
 
 #include "CLContext.inl"
 
-CLContext::CLContext() :
-	platform(__getDefaultPlatform()),
-	device(__getDefaultDevice(platform))
+CLContext::CLContext(cl::Platform & platform, cl::Device & device) :
+	platform(platform),
+	device(device)
 {
 	cl_context_properties	properties[] = {
 		CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
@@ -23,12 +23,19 @@ CLContext::CLContext() :
 		0
 	};
 
-	context = cl::Context(device, properties);
-
-	queue = cl::CommandQueue(context, device);
-
-	if (context() == nullptr)
-		Utils::die("Could not create the OpenCL context.");
+	try
+	{
+		context = cl::Context(device, properties);
+		queue = cl::CommandQueue(context, device);
+	}
+	catch (const cl::Error & e)
+	{
+		Utils::die(
+			"Error while creating the CL context: %s returned %i.\n",
+			e.what(),
+			e.err()
+		);
+	}
 }
 
 CLContext::~CLContext()
@@ -44,8 +51,14 @@ void			CLContext::buildProgram()
 {
 	program = cl::Program(context, sources);
 
-	if (program.build({ device }) != CL_SUCCESS)
-		Utils::die(program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device));
+	try
+	{
+		program.build({ device });
+	}
+	catch (const cl::Error & e)
+	{
+		Utils::die("%s\n", program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device).c_str());
+	}
 }
 
 std::ostream &	operator<<(std::ostream & os, const CLContext & cl)
@@ -55,8 +68,7 @@ std::ostream &	operator<<(std::ostream & os, const CLContext & cl)
 		<< cl.platform.getInfo<CL_PLATFORM_NAME>()
 		<< std::endl
 		<< "Using device "
-		<< cl.device.getInfo<CL_DEVICE_NAME>()
-		<< std::endl;
+		<< cl.device.getInfo<CL_DEVICE_NAME>();
 
 	return os;
 }
