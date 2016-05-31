@@ -1,9 +1,9 @@
 
-void kernel test_kernel(global float * A)
+void kernel test_kernel(global float4 * A)
 {
-	int		i = get_global_id(0) * 3;
+	int		i = get_global_id(0);
 
-	A[i] = 0;
-	A[i + 1] = 0;
-	A[i + 2] = 0;
+	A[i].x = 0;
+	A[i].y = 0;
+	A[i].z = 0;
 }

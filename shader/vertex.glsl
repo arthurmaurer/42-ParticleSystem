@@ -1,9 +1,9 @@
 
 #version 400 core
 
-in vec3		vp;
+in vec4		position;
 
 void	main()
 {
-	gl_Position = vec4(vp, 1);
+	gl_Position = position;
 }

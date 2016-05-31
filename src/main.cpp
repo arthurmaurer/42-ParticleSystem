@@ -8,6 +8,7 @@
 #include "CLContext.hpp"
 #include "GLContext.hpp"
 #include "Utils.hpp"
+#include <Config.hpp>
 
 static bool		isAnswerCorrect(const std::vector<std::string> & choices, const std::string & answer)
 {
@@ -55,15 +56,14 @@ static std::string	getDeviceName(const cl::Device & device)
 	return device.getInfo<CL_DEVICE_NAME>();
 }
 
-static std::pair<cl::Platform, cl::Device>	selectDevice()
+static cl::Platform	getPlatform(const std::string & defaultName)
 {
 	std::vector<cl::Platform>	platforms;
-	std::vector<cl::Device>		devices;
 	std::vector<std::string>	choices;
-	int							platformID;
-	int							deviceID;
+	size_t						platformID;
 
 	cl::Platform::get(&platforms);
+
 	choices.resize(platforms.size());
 
 	std::transform(
@@ -72,13 +72,35 @@ static std::pair<cl::Platform, cl::Device>	selectDevice()
 		getPlatformName
 	);
 
-	platformID = promptChoice(
-		"Available OpenCL platforms on this computer:",
-		"Which platform do you want to use ? ",
-		choices
-	);
+	if (defaultName.empty())
+	{
+		platformID = promptChoice(
+			"Available OpenCL platforms on this computer:",
+			"Which platform do you want to use ? ",
+			choices
+		);
+	}
+	else
+	{
+		const auto occ = std::find(choices.cbegin(), choices.cend(), defaultName);
 
-	platforms[platformID].getDevices(CL_DEVICE_TYPE_ALL, &devices);
+		if (occ == choices.cend())
+			Utils::die("The platform \"%s\" does not exist.\n", defaultName.c_str());
+
+		platformID = occ - choices.cbegin();
+	}
+
+	return platforms[platformID];
+}
+
+static cl::Device		getDevice(const cl::Platform & platform, const std::string & defaultName)
+{
+	std::vector<cl::Device>		devices;
+	std::vector<std::string>	choices;
+	size_t						deviceID;
+
+	platform.getDevices(CL_DEVICE_TYPE_ALL, &devices);
+
 	choices.resize(devices.size());
 
 	std::transform(
@@ -87,21 +109,48 @@ static std::pair<cl::Platform, cl::Device>	selectDevice()
 		getDeviceName
 	);
 
-	std::cout << std::endl;
+	if (defaultName.empty())
+	{
+		deviceID = promptChoice(
+			"Available OpenCL platforms on this computer:",
+			"Which platform do you want to use ? ",
+			choices
+		);
+	}
+	else
+	{
+		const auto occ = std::find(choices.cbegin(), choices.cend(), defaultName);
 
-	deviceID = promptChoice(
-		"Available OpenCL devices for this platform:",
-		"Which device do you want to use ? ",
-		choices
-	);
+		if (occ == choices.cend())
+			Utils::die("The device \"%s\" does not exist.\n", defaultName.c_str());
 
-	return { platforms[platformID], devices[deviceID] };
+		deviceID = occ - choices.cbegin();
+	}
+
+	return devices[deviceID];
+}
+
+static std::pair<cl::Platform, cl::Device>	selectDevice(
+	const std::string & defaultPlatformName,
+	const std::string & defaultDeviceName
+)
+{
+	cl::Platform		platform = getPlatform(defaultPlatformName);
+	cl::Device			device = getDevice(platform, defaultDeviceName);
+
+	return { platform, device };
 }
 
 int		main()
 {
+	Config &	config = Config::instance();
+
+	config["platform"].s = "NVIDIA CUDA";
+	config["device"].s = "GeForce GTX 720M";
+	config["particleCount"].u = 100;
+
 	GLContext		gl;
-	std::pair<cl::Platform, cl::Device>		clInfos = selectDevice();
+	std::pair<cl::Platform, cl::Device>		clInfos = selectDevice("", "");
 	CLContext		cl(clInfos.first, clInfos.second);
 
 	std::cout << gl << std::endl;

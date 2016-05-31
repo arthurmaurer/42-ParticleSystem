@@ -10,8 +10,6 @@
 #include "GLContext.hpp"
 #include "Utils.hpp"
 
-#include "CLContext.inl"
-
 CLContext::CLContext(cl::Platform & platform, cl::Device & device) :
 	platform(platform),
 	device(device)
@@ -57,6 +55,7 @@ void			CLContext::buildProgram()
 	}
 	catch (const cl::Error & e)
 	{
+		(void)e;
 		Utils::die("%s\n", program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device).c_str());
 	}
 }

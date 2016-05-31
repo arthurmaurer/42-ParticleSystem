@@ -9,18 +9,18 @@
 
 #include "ParticleSystem.inl"
 
+
 ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext) :
 	gl(glContext),
 	cl(clContext)
 {
 	GLuint	vbo;
-	GLuint	size = 9 * sizeof(GLfloat);
-
-	float points[] = {
-		0.0f,  0.5f,  0.0f,
-		0.5f, -0.5f,  0.0f,
-		-0.5f, -0.5f,  0.0f
+	cl_float4 points[] = {
+		{ 0.0f,  0.5f,  0.0f, 1.0f },
+		{ 0.5f, -0.5f,  0.0f, 1.0f },
+		{ -0.5f, -0.5f,  0.0f, 1.0f }
 	};
+	GLuint	size = sizeof(points);
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -32,7 +32,7 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext) :
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 	gl.vaos.push_back(vao);
 
 	try
