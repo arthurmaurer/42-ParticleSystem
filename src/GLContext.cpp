@@ -30,8 +30,8 @@ GLContext::GLContext(unsigned width, unsigned height)
 	if (glewInit() != GLEW_OK)
 		Utils::die("Count not init glew.");
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 	glClearColor(0, 0, 0, 1.f);
+	glfwSwapInterval(0);
 }
 
 GLContext::~GLContext()

@@ -1,19 +1,31 @@
 
+#include <cstdio>
+
+#include "FPSCounter.hpp"
+
+static void		__updateWindowTitle(ParticleSystem & ps)
+{
+	char	title[50];
+
+	sprintf(title, "%i fps", (int)FPSCounter::fps);
+	glfwSetWindowTitle(ps.gl.window, title);
+}
+
 static void		__render(void * ptr)
 {
-	ParticleSystem *	ps = static_cast<ParticleSystem *>(ptr);
-	CLContext &			cl = ps->cl;
-	GLContext &			gl = ps->gl;
+	ParticleSystem &	ps = *(static_cast<ParticleSystem *>(ptr));
+	CLContext &			cl = ps.cl;
+	GLContext &			gl = ps.gl;
 	cl::CommandQueue &	queue = cl.queue;
 
 	try
 	{
-		glFinish();
-
-		queue.enqueueAcquireGLObjects(&cl.vbos);
-		cl::Kernel	kernel(cl.program, "test_kernel");
+		cl::Kernel	kernel(cl.program, "update_particles");
 		kernel.setArg(0, cl.vbos[0]);
-		queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(3), cl::NullRange);
+
+		glFinish();
+		queue.enqueueAcquireGLObjects(&cl.vbos);
+		queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ps.particleCount), cl::NullRange);
 		queue.finish();
 		queue.enqueueReleaseGLObjects(&cl.vbos);
 	}
@@ -29,9 +41,13 @@ static void		__render(void * ptr)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindBuffer(GL_ARRAY_BUFFER, gl.vbos[0]);
 	glBindVertexArray(gl.vaos[0]);
-	ps->program->enable();
+	ps.program->enable();
 
-	glDrawArrays(GL_POINTS, 0, 3);
+	glDrawArrays(GL_POINTS, 0, ps.particleCount);
 
-	ps->program->disable();
+	ps.program->disable();
+
+	FPSCounter::update();
+
+	__updateWindowTitle(ps);
 }

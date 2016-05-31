@@ -8,7 +8,8 @@
 #include "CLContext.hpp"
 #include "GLContext.hpp"
 #include "Utils.hpp"
-#include <Config.hpp>
+#include "Config.hpp"
+#include "FPSCounter.hpp"
 
 static bool		isAnswerCorrect(const std::vector<std::string> & choices, const std::string & answer)
 {
@@ -147,7 +148,7 @@ int		main()
 
 	config["platform"].s = "NVIDIA CUDA";
 	config["device"].s = "GeForce GTX 720M";
-	config["particleCount"].u = 100;
+	config["particleCount"].u = 4096;
 
 	GLContext		gl;
 	std::pair<cl::Platform, cl::Device>		clInfos = selectDevice("", "");
@@ -156,7 +157,10 @@ int		main()
 	std::cout << gl << std::endl;
 	std::cout << cl << std::endl;
 
-	ParticleSystem	ps(gl, cl);
+	ParticleSystem	ps(gl, cl, config["particleCount"].u);
+	ps.init();
+
+	FPSCounter::start();
 
 	gl.render(&ps);
 

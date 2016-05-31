@@ -10,21 +10,17 @@
 #include "ParticleSystem.inl"
 
 
-ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext) :
+ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_uint particleCount) :
 	gl(glContext),
-	cl(clContext)
+	cl(clContext),
+	particleCount(particleCount)
 {
 	GLuint	vbo;
-	cl_float4 points[] = {
-		{ 0.0f,  0.5f,  0.0f, 1.0f },
-		{ 0.5f, -0.5f,  0.0f, 1.0f },
-		{ -0.5f, -0.5f,  0.0f, 1.0f }
-	};
-	GLuint	size = sizeof(points);
+	GLuint	size = sizeof(cl_float4) * static_cast<GLuint>(particleCount);
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, size, points, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	gl.vbos.push_back(vbo);
 
 	GLuint vao = 0;
@@ -48,7 +44,8 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext) :
 		);
 	}
 
-	cl.addSource(Utils::readFile("kernel/default.cl"));
+	cl.addSource(Utils::readFile("kernel/init.cl"));
+	cl.addSource(Utils::readFile("kernel/update.cl"));
 	cl.buildProgram();
 
 	program = new ShaderProgram("shader/vertex.glsl", "shader/fragment.glsl");
@@ -59,4 +56,30 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext) :
 ParticleSystem::~ParticleSystem()
 {
 	delete program;
+}
+
+void		ParticleSystem::init()
+{
+	try
+	{
+		cl::CommandQueue &	queue = cl.queue;
+		cl::Kernel	kernel(cl.program, "initialize_rect");
+
+		kernel.setArg(0, cl.vbos[0]);
+		kernel.setArg(1, sizeof(cl_uint), &particleCount);
+
+		queue.enqueueAcquireGLObjects(&cl.vbos);
+		queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(particleCount), cl::NullRange);
+		queue.finish();
+		queue.enqueueReleaseGLObjects(&cl.vbos);
+	}
+	catch (const cl::Error & e)
+	{
+		Utils::die(
+			"Error while initializing particles: %s returned %s (%i).\n",
+			e.what(),
+			CLContext::getErrorString(e.err()).c_str(),
+			e.err()
+		);
+	}
 }

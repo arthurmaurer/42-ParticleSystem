@@ -9,8 +9,8 @@ class Config
 public:
 	union Value
 	{
-		int			i;
-		unsigned	u;
+		cl_int		i;
+		cl_uint		u;
 		char *		s;
 	};
 
@@ -20,7 +20,6 @@ public:
 
 	static Config &	instance();
 
-	void			set(const std::string & key, const Value & value);
 	Value &			get(const std::string & key);
 	bool			has(const std::string & key) const;
 

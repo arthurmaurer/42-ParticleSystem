@@ -16,7 +16,7 @@ std::string	Utils::readFile(const std::string & path)
 	std::stringstream	ss;
 
 	if (!file.good())
-		Utils::die("The script file \"$\" can not be opened.", path.c_str());
+		Utils::die("The script file \"%s\" cannot be opened.\n", path.c_str());
 
 	ss << file.rdbuf();
 

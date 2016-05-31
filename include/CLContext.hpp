@@ -19,11 +19,12 @@ public:
 	cl::Program::Sources	sources;
 	cl::CommandQueue		queue;
 	std::vector<cl::Memory>	vbos;
-	KernelMap				kernels;
 	cl::Program				program;
 
 	void			addSource(const std::string & code);
 	void			buildProgram();
+
+	static std::string	getErrorString(cl_int error);
 };
 
 std::ostream &	operator<<(std::ostream & os, const CLContext & cl);
