@@ -6,6 +6,7 @@
 #include "GLContext.hpp"
 #include "CLContext.hpp"
 #include "Utils.hpp"
+#include "Particle.hpp"
 
 #include "ParticleSystem.inl"
 
@@ -16,7 +17,7 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 	particleCount(particleCount)
 {
 	GLuint	vbo;
-	GLuint	size = sizeof(cl_float4) * static_cast<GLuint>(particleCount);
+	GLuint	size = sizeof(Particle) * static_cast<GLuint>(particleCount);
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -26,9 +27,11 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 	GLuint vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), nullptr);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)4);
+	
 	gl.vaos.push_back(vao);
 
 	try
@@ -44,6 +47,7 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 		);
 	}
 
+	cl.addSource(Utils::readFile("kernel/header.cl"));
 	cl.addSource(Utils::readFile("kernel/init.cl"));
 	cl.addSource(Utils::readFile("kernel/update.cl"));
 	cl.buildProgram();

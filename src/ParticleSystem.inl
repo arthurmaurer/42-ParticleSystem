@@ -6,8 +6,12 @@
 static void		__updateWindowTitle(ParticleSystem & ps)
 {
 	char	title[50];
+	float	fps = FPSCounter::fps;
 
-	sprintf(title, "%i fps", (int)FPSCounter::fps);
+	if (fps < 0)
+		return;
+
+	sprintf(title, "%i fps", static_cast<int>(fps));
 	glfwSetWindowTitle(ps.gl.window, title);
 }
 
@@ -22,7 +26,6 @@ static void		__render(void * ptr)
 	{
 		cl::Kernel	kernel(cl.program, "update_particles");
 		kernel.setArg(0, cl.vbos[0]);
-
 		glFinish();
 		queue.enqueueAcquireGLObjects(&cl.vbos);
 		queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ps.particleCount), cl::NullRange);
