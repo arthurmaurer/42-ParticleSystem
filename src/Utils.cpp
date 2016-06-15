@@ -7,12 +7,13 @@
 #include <cstdio>
 
 #include "Utils.hpp"
+#include "CLContext.hpp"
 
 #include "Utils.inl"
 
 std::string	Utils::readFile(const std::string & path)
 {
-	std::ifstream	file(path.c_str(), std::ios::in);
+	std::ifstream		file(path.c_str(), std::ios::in);
 	std::stringstream	ss;
 
 	if (!file.good())
@@ -33,4 +34,14 @@ void		Utils::die(const char * format, ...)
 
 	system("pause");
 	exit(EXIT_FAILURE);
+}
+
+void		Utils::die(const char * message, const cl::Error & e)
+{
+	die("%s: %s returned %s (%i)\n",
+		message,
+		e.what(),
+		CLContext::getErrorString(e.err()).c_str(),
+		e.err()
+	);
 }

@@ -10,10 +10,10 @@ public:
 	GLuint			id = 0;
 
 	Shader();
-	Shader(const std::string & path, GLenum type);
+	Shader(GLenum type, const std::string & path);
 	~Shader();
 
-	void	load(const std::string & path, GLenum type);
+	void	load(GLenum type, const std::string & path);
 
 protected:
 	void	_compile() const;

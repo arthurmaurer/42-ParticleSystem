@@ -148,16 +148,16 @@ int		main()
 
 	config["platform"].s = "NVIDIA CUDA";
 	config["device"].s = "GeForce GTX 720M";
-	config["particleCount"].u = 4096;
+	config["particleCount"].u = 5000000;
 
-	GLContext		gl;
+	GLContext		gl(600, 600);
 	std::pair<cl::Platform, cl::Device>		clInfos = selectDevice("", "");
 	CLContext		cl(clInfos.first, clInfos.second);
 
 	std::cout << gl << std::endl;
 	std::cout << cl << std::endl;
 
-	ParticleSystem	ps(gl, cl, config["particleCount"].u);
+	ParticleSystem &	ps = ParticleSystem::instance(&gl, &cl, config["particleCount"].u);
 	ps.init();
 
 	FPSCounter::start();

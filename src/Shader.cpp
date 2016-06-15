@@ -2,9 +2,9 @@
 #include "Shader.hpp"
 #include "Utils.hpp"
 
-Shader::Shader(const std::string & path, GLenum type)
+Shader::Shader(GLenum type, const std::string & path)
 {
-	load(path, type);
+	load(type, path);
 }
 
 Shader::Shader()
@@ -16,7 +16,7 @@ Shader::~Shader()
 		glDeleteShader(id);
 }
 
-void	Shader::load(const std::string & path, GLenum type)
+void	Shader::load(GLenum type, const std::string & path)
 {
 	const std::string	code = Utils::readFile(path);
 	const char *		cCode = code.c_str();

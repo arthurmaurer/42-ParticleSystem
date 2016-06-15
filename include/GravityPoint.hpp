@@ -3,9 +3,9 @@
 
 #include <CL/cl.hpp>
 
-class Particle
+class GravityPoint
 {
 public:
 	cl_float2	position;
-	cl_float2	velocity;
+	cl_float	enabled;
 };

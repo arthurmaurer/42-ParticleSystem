@@ -1,56 +1,23 @@
 
-#include <cstdio>
-
-#include "FPSCounter.hpp"
-
-static void		__updateWindowTitle(ParticleSystem & ps)
+static void		__update(void * ptr)
 {
-	char	title[50];
-	float	fps = FPSCounter::fps;
+	const ParticleSystem *	ps = static_cast<ParticleSystem *>(ptr);
+	const GravityPoint &	gp = ps->gravityPoints[0];
+	const ShaderProgram *	program = ps->gl.programs["particle"];
 
-	if (fps < 0)
-		return;
+	ps->updateParticles();
 
-	sprintf(title, "%i fps", static_cast<int>(fps));
-	glfwSetWindowTitle(ps.gl.window, title);
-}
+	program->enable();
+	GLint uniID = glGetUniformLocation(program->id, "gp");
+	
+	glUniform4f(
+		uniID,
+		gp.position.x,
+		gp.position.y,
+		0.f,
+		gp.enabled
+	);
+	program->disable();
 
-static void		__render(void * ptr)
-{
-	ParticleSystem &	ps = *(static_cast<ParticleSystem *>(ptr));
-	CLContext &			cl = ps.cl;
-	GLContext &			gl = ps.gl;
-	cl::CommandQueue &	queue = cl.queue;
-
-	try
-	{
-		cl::Kernel	kernel(cl.program, "update_particles");
-		kernel.setArg(0, cl.vbos[0]);
-		glFinish();
-		queue.enqueueAcquireGLObjects(&cl.vbos);
-		queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ps.particleCount), cl::NullRange);
-		queue.finish();
-		queue.enqueueReleaseGLObjects(&cl.vbos);
-	}
-	catch (const cl::Error & e)
-	{
-		Utils::die(
-			"An error occured while rendering: %s returned %i\n",
-			e.what(),
-			e.err()
-		);
-	}
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindBuffer(GL_ARRAY_BUFFER, gl.vbos[0]);
-	glBindVertexArray(gl.vaos[0]);
-	ps.program->enable();
-
-	glDrawArrays(GL_POINTS, 0, ps.particleCount);
-
-	ps.program->disable();
-
-	FPSCounter::update();
-
-	__updateWindowTitle(ps);
+	Renderer::render(*ps);
 }
