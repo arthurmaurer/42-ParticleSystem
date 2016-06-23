@@ -1,12 +1,8 @@
 
 typedef struct
 {
-	float2	position;
-	float2	velocity;
+	float4	position;
+	float4	velocity;
 }			Particle;
 
-typedef struct
-{
-	float2	position;
-	float	enabled;
-}			GravityPoint;
+typedef float4	GravityPoint;

@@ -33,7 +33,7 @@ GLContext::GLContext(unsigned width, unsigned height) :
 	if (glewInit() != GLEW_OK)
 		Utils::die("Count not init glew.");
 
-	//glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(0, 0, 0, 1.f);

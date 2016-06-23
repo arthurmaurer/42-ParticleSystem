@@ -18,7 +18,7 @@ ShaderProgram::~ShaderProgram()
 	if (id != 0)
 		glDeleteProgram(id);
 }
-#include <iostream>
+
 void	ShaderProgram::load(const std::vector<Shader *> & shaders)
 {
 	GLint		success;

@@ -18,7 +18,7 @@ void		Renderer::render(const ParticleSystem & ps)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	Renderer::_renderParticles(ps);
-	//Renderer::_renderGPs(ps);
+	Renderer::_renderGPs(ps);
 	Renderer::_updateWindowTitle(ps);
 
 	FPSCounter::update();
@@ -27,24 +27,24 @@ void		Renderer::render(const ParticleSystem & ps)
 void		Renderer::_renderParticles(const ParticleSystem & ps)
 {
 	GLContext &		gl = ps.gl;
-	ShaderProgram &	program = *(gl.programs["particle"]);
+	ShaderProgram *	program = gl.programs["particle"];
 
 	glBindVertexArray(gl.vaos["particle"]);
-	program.enable();
+	program->enable();
 	glDrawArrays(GL_POINTS, 0, ps.particleCount);
-	program.disable();
+	program->disable();
 	glBindVertexArray(0);
 }
 
 void		Renderer::_renderGPs(const ParticleSystem & ps)
 {
 	GLContext &		gl = ps.gl;
-	ShaderProgram &	program = *(gl.programs["gp"]);
+	ShaderProgram *	program = gl.programs["gp"];
 
 	glBindVertexArray(gl.vaos["gp"]);
-	program.enable();
-	glDrawArrays(GL_POINTS, 0, GRAVITY_POINTS_MAX);
-	program.disable();
+	program->enable();
+	glDrawArrays(GL_POINTS, 0, ps.gpManager.gpCount);
+	program->disable();
 	glBindVertexArray(0);
 }
 

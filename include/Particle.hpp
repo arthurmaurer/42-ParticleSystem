@@ -6,6 +6,6 @@
 class Particle
 {
 public:
-	cl_float2	position;
-	cl_float2	velocity;
+	cl_float3	position;
+	cl_float3	velocity;
 };

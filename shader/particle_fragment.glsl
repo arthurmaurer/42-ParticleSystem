@@ -3,8 +3,7 @@
 
 uniform	vec4	gp;
 
-in	vec2	passVelocity;
-in	vec2	passPosition;
+in	vec3	passPosition;
 
 out	vec4	outColor;
 
@@ -13,7 +12,7 @@ out	vec4	outColor;
 
 void	main()
 {
-	float	distance = length(gp.xy - passPosition);
+	float	distance = length(gp.xyz - passPosition);
 	float	ratio = (1 / distance) / 4;
 
 	vec4 color = mix(COLOR_MIN, COLOR_MAX, ratio * gp.w);

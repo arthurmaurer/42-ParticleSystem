@@ -1,15 +1,15 @@
 
 #version 400 core
 
-in	vec2	inPosition;
-in	vec2	inVelocity;
+uniform	mat4	mvp;
 
-out	vec2	passVelocity;
-out	vec2	passPosition;
+in	vec4	inPosition;
+in	vec4	inVelocity;
+
+out	vec3	passPosition;
 
 void	main()
 {
-	gl_Position = vec4(inPosition, 0, 1);
-	passVelocity = inVelocity;
-	passPosition = inPosition;
+	gl_Position = vec4(inPosition.xyz, 1) * mvp;
+	passPosition = inPosition.xyz;
 }

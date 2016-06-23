@@ -14,8 +14,8 @@
 #include "GravityPoint.hpp"
 #include "Renderer.hpp"
 #include "Control.hpp"
-
-#include "ParticleSystem.inl"
+#include "Matrix4.hpp"
+#include "Vec3.hpp"
 
 ParticleSystem &	ParticleSystem::instance(GLContext * glContext, CLContext * clContext, cl_uint particleCount)
 {
@@ -35,11 +35,9 @@ ParticleSystem &	ParticleSystem::instance(GLContext * glContext, CLContext * clC
 ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_uint particleCount) :
 	gl(glContext),
 	cl(clContext),
-	particleCount(particleCount)
+	particleCount(particleCount),
+	gpManager(GravityPointManager(5))
 {
-	gravityPoints.resize(GRAVITY_POINTS_MAX);
-	memset(gravityPoints.data(), 0, sizeof(GravityPoint) * GRAVITY_POINTS_MAX);
-
 	_createShaderPrograms();
 
 	_createBuffers();
@@ -49,12 +47,22 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 	cl.addSource(Utils::readFile("kernel/update.cl"));
 	cl.buildProgram();
 
-	gl.renderer = __update;
+	gl.renderer = [&](void *data)
+	{
+		update();
+	};
 
-	glfwSetKeyCallback(gl.window, Control::onKeyDown);
+	glfwSetKeyCallback(gl.window, Control::onKeyboard);
 	glfwSetMouseButtonCallback(gl.window, Control::onMouseClick);
 	glfwSetCursorPosCallback(gl.window, Control::onMouseMove);
 	glfwSetWindowSizeCallback(gl.window, GLContext::resizeWindow);
+
+	projectionMatrix = Matrix4::getPerspective(
+		Utils::rad(60),
+		gl.width / (float)gl.height,
+		0.001f,
+		100.f
+	);
 }
 
 ParticleSystem::~ParticleSystem()
@@ -63,12 +71,14 @@ ParticleSystem::~ParticleSystem()
 	delete gl.programs["gp"];
 }
 
-void		ParticleSystem::init()
+void		ParticleSystem::init(const std::string & initFunction)
 {
+	initCamera();
+
 	try
 	{
 		cl::CommandQueue &	queue = cl.queue;
-		cl::Kernel			kernel(cl.program, "initialize_rect");
+		cl::Kernel			kernel(cl.program, initFunction.c_str());
 
 		kernel.setArg(0, cl.vbos[0]);
 		kernel.setArg(1, sizeof(cl_uint), &particleCount);
@@ -89,10 +99,26 @@ void		ParticleSystem::init()
 	}
 }
 
+void		ParticleSystem::initCamera()
+{
+	camera.matrix = Matrix4::identity.translate(Vec3(0, 0, 1));
+	camera.linearVelocity = Vec3::zero;
+	camera.angularVelocity = Vec3::zero;
+	camera.rotation = Quaternion::identity;
+}
+
+void		ParticleSystem::update()
+{
+	updateParticles();
+	camera.update();
+	updateUniforms();
+	Renderer::render(*this);
+}
+
 void		ParticleSystem::updateGPBuffer() const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, gl.vbos["gp"]);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GravityPoint) * GRAVITY_POINTS_MAX, gravityPoints.data());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GravityPoint) * gpManager.gpCount, gpManager.gravityPoints.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -112,22 +138,52 @@ void		ParticleSystem::updateParticles() const
 		deltaTime = 1000.f * (newTime - lastTime) / CLOCKS_PER_SEC;
 		lastTime = newTime;
 
-		cl::Kernel	kernel(cl.program, "update_particles");
-		kernel.setArg(0, cl.vbos[0]);
-		kernel.setArg(1, cl.vbos[1]);
-		kernel.setArg(2, sizeof(cl_float), &deltaTime);
+		if (!_paused)
+		{
+			cl::Kernel	kernel(cl.program, "update_particles");
+			kernel.setArg(0, cl.vbos[0]);
+			kernel.setArg(1, cl.vbos[1]);
+			kernel.setArg(2, sizeof(cl_float), &deltaTime);
 
-		glFinish();
+			glFinish();
 
-		queue.enqueueAcquireGLObjects(&cl.vbos);
-		queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(particleCount), cl::NullRange);
-		queue.finish();
-		queue.enqueueReleaseGLObjects(&cl.vbos);
+			queue.enqueueAcquireGLObjects(&cl.vbos);
+			queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(particleCount), cl::NullRange);
+			queue.finish();
+			queue.enqueueReleaseGLObjects(&cl.vbos);
+		}
 	}
 	catch (const cl::Error & e)
 	{
 		Utils::die("An error occured while particles updating", e);
 	}
+}
+
+void		ParticleSystem::updateUniforms() const
+{
+	const ShaderProgram *	program;
+	const GravityPoint &	gp = gpManager.gravityPoints[0];
+	GLint					uniID;
+	const Matrix4			mvp = projectionMatrix * camera.matrix.inverse();
+
+	program = gl.programs["particle"];
+	program->enable();
+	uniID = glGetUniformLocation(program->id, "gp");
+	glUniform4f(uniID, gp.x, gp.y, gp.z, gp.w);
+	uniID = glGetUniformLocation(program->id, "mvp");
+	glUniformMatrix4fv(uniID, 1, GL_FALSE, mvp.data);
+	program->disable();
+
+	program = gl.programs["gp"];
+	program->enable();
+	uniID = glGetUniformLocation(program->id, "mvp");
+	glUniformMatrix4fv(uniID, 1, GL_FALSE, mvp.data);
+	program->disable();
+}
+
+void		ParticleSystem::togglePause()
+{
+	_paused = !_paused;
 }
 
 void		ParticleSystem::_createBuffers()
@@ -174,30 +230,28 @@ void		ParticleSystem::_configureParticleBuffer()
 
 	attribID = glGetAttribLocation(programID, "inPosition");
 	glEnableVertexAttribArray(attribID);
-	glVertexAttribPointer(attribID, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), nullptr);
+	glVertexAttribPointer(attribID, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), nullptr);
 
 	attribID = glGetAttribLocation(programID, "inVelocity");
 	glEnableVertexAttribArray(attribID);
-	glVertexAttribPointer(attribID, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(sizeof(cl_float2)));
+	glVertexAttribPointer(attribID, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(sizeof(cl_float4)));
 
 	glBindVertexArray(0);
 }
 
 void		ParticleSystem::_configureGPBuffer()
 {
-	GLuint	size = sizeof(GravityPoint) * GRAVITY_POINTS_MAX;
+	GLuint	size = sizeof(GravityPoint) * gpManager.gpCount;
 	GLuint	vbo = gl.vbos["gp"];
 	GLuint	vao = gl.vaos["gp"];
 
 	glBindVertexArray(vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, size, gravityPoints.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, gpManager.gravityPoints.data(), GL_DYNAMIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GravityPoint), nullptr);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(GravityPoint), (void *)2);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(GravityPoint), nullptr);
 
 	glBindVertexArray(0);
 }
@@ -210,8 +264,8 @@ void		ParticleSystem::_createShaderPrograms()
 	});
 
 	gl.programs["gp"] = new ShaderProgram({
+		//&Shader(GL_GEOMETRY_SHADER, "shader/gp_geometry.glsl"),
 		&Shader(GL_VERTEX_SHADER, "shader/gp_vertex.glsl"),
-		&Shader(GL_GEOMETRY_SHADER, "shader/gp_geometry.glsl"),
 		&Shader(GL_FRAGMENT_SHADER, "shader/gp_fragment.glsl")
 	});
 }

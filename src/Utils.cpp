@@ -7,6 +7,7 @@
 #include <cstdio>
 
 #include "Utils.hpp"
+#include "Vec3.hpp"
 #include "CLContext.hpp"
 
 #include "Utils.inl"
@@ -44,4 +45,34 @@ void		Utils::die(const char * message, const cl::Error & e)
 		CLContext::getErrorString(e.err()).c_str(),
 		e.err()
 	);
+}
+
+float		Utils::rad(float deg)
+{
+	return (deg * (static_cast<float>(M_PI) / 180.f));
+}
+
+Vec3		Utils::rad(const Vec3 & deg)
+{
+	return Vec3(rad(deg.x), rad(deg.y), rad(deg.z));
+}
+
+float		Utils::deg(float rad)
+{
+	return ((rad * 180.f) / static_cast<float>(M_PI));
+}
+
+Vec3		Utils::deg(const Vec3 & rad)
+{
+	return Vec3(deg(rad.x), deg(rad.y), deg(rad.z));
+}
+
+float		Utils::clamp(float value, float min, float max)
+{
+	if (value < min)
+		return min;
+	else if (value > max)
+		return max;
+
+	return value;
 }

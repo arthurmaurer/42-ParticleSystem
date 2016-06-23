@@ -3,9 +3,4 @@
 
 #include <CL/cl.hpp>
 
-class GravityPoint
-{
-public:
-	cl_float2	position;
-	cl_float	enabled;
-};
+typedef cl_float4		GravityPoint;
