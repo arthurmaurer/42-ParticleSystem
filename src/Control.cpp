@@ -4,32 +4,33 @@
 #include "Control.hpp"
 #include "ParticleSystem.hpp"
 #include "GLContext.hpp"
+#include "Vec2.hpp"
 #include "Vec3.hpp"
+#include "Utils.hpp"
 
 bool			Control::isMouseDown = false;
 int				Control::mouseButton = 0;
-cl_float2		Control::lastPosition = { 0, 0 };
+Vec2			Control::lastPosition = { 0, 0 };
 bool			Control::stackMode = false;
 GravityPoint *	Control::currentGP = nullptr;
 
 void	Control::onMouseMove(GLFWwindow * window, double x, double y)
 {
+	Vec2	screenPosition((float)x, (float)y);
+
 	if (isMouseDown)
 	{
-		ParticleSystem &	ps = ParticleSystem::instance();
+		ParticleSystem & ps = ParticleSystem::instance();
 
-		if ((mouseButton == GLFW_MOUSE_BUTTON_LEFT || mouseButton == GLFW_MOUSE_BUTTON_RIGHT) && currentGP != nullptr)
+		if ((mouseButton == GLFW_MOUSE_BUTTON_LEFT ||
+			(mouseButton == GLFW_MOUSE_BUTTON_RIGHT && ps.gpManager.getFreeGP() != nullptr)) && currentGP != nullptr)
 		{
-			*currentGP = {
-				(cl_float)x / (ps.gl.width / 2) - 1.f,
-				-1 * (cl_float)y / (ps.gl.height / 2) + 1.f,
-				0,
-				1
-			};
+			Vec3 position = _getMouseOnControlPlane(screenPosition);
+			_setCurrentGPPosition(position);
 		}
 	}
 
-	Control::lastPosition = { (cl_float)x, (cl_float)y };
+	Control::lastPosition = screenPosition;
 }
 
 void	Control::onMouseClick(GLFWwindow * window, int button, int action, int _)
@@ -48,14 +49,9 @@ void	Control::onMouseClick(GLFWwindow * window, int button, int action, int _)
 
 		if (gp != nullptr)
 		{
+			Vec3 position = _getMouseOnControlPlane(lastPosition);
 			currentGP = gp;
-
-			*currentGP = {
-				lastPosition.x / (ps.gl.width / 2) - 1.f,
-				-1 * lastPosition.y / (ps.gl.height / 2) + 1.f,
-				0,
-				1
-			};
+			_setCurrentGPPosition(position);
 		}
 	}
 	else
@@ -134,4 +130,18 @@ void	Control::onKeyboard(GLFWwindow * window, int key, int scancode, int action,
 			break;
 		}
 	}
+}
+
+Vec3	Control::_getMouseOnControlPlane(const Vec2 & screenPosition)
+{
+	Camera &	camera = ParticleSystem::instance().camera;
+	Ray			ray = camera.screenPointToRay(screenPosition);
+	Vec3		hitPoint = Utils::getRayPlaneIntersection(ray, Vec3::zero, camera.rotation * Vec3::back);
+
+	return hitPoint;
+}
+
+void	Control::_setCurrentGPPosition(const Vec3 & position)
+{
+	*currentGP = { position.x, position.y, position.z, 1.f };
 }

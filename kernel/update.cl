@@ -1,5 +1,5 @@
 
-#define GRAVITY_POINTS_MAX		5
+#define GRAVITY_POINTS_MAX		3
 #define GRAVITY_MAX				2.0f
 #define MINIMUM_VELOCITY		0.05f
 

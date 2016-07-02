@@ -8,9 +8,8 @@
 
 #include "Utils.hpp"
 #include "Vec3.hpp"
+#include "Ray.hpp"
 #include "CLContext.hpp"
-
-#include "Utils.inl"
 
 std::string	Utils::readFile(const std::string & path)
 {
@@ -75,4 +74,12 @@ float		Utils::clamp(float value, float min, float max)
 		return max;
 
 	return value;
+}
+
+Vec3		Utils::getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal)
+{
+	float	distance = planeNormal.dot(planePosition - ray.origin) / planeNormal.dot(ray.direction);
+	Vec3	hitPoint = ray.origin + ray.direction * distance;
+
+	return hitPoint;
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 
 class Vec3;
+class Vec4;
 class Quaternion;
 
 class Matrix4
@@ -23,7 +24,10 @@ public:
 
 	Matrix4 &	operator=(const Matrix4 & rhs);
 	Matrix4		operator*(const Matrix4 & rhs) const;
+	Vec4		operator*(const Vec4 & vec) const;
+	Vec3		operator*(const Vec3 & vec) const;
 	Matrix4 &	operator*=(const Matrix4 & rhs);
+	float		operator[](const unsigned index) const;
 
 	Matrix4		translate(const Vec3 & amount) const;
 

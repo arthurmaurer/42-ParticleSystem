@@ -36,7 +36,8 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 	gl(glContext),
 	cl(clContext),
 	particleCount(particleCount),
-	gpManager(GravityPointManager(5))
+	gpManager(GravityPointManager(3)),
+	camera(glContext.windowSize)
 {
 	_createShaderPrograms();
 
@@ -56,13 +57,6 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 	glfwSetMouseButtonCallback(gl.window, Control::onMouseClick);
 	glfwSetCursorPosCallback(gl.window, Control::onMouseMove);
 	glfwSetWindowSizeCallback(gl.window, GLContext::resizeWindow);
-
-	projectionMatrix = Matrix4::getPerspective(
-		Utils::rad(60),
-		gl.width / (float)gl.height,
-		0.001f,
-		100.f
-	);
 }
 
 ParticleSystem::~ParticleSystem()
@@ -74,6 +68,7 @@ ParticleSystem::~ParticleSystem()
 void		ParticleSystem::init(const std::string & initFunction)
 {
 	initCamera();
+	gpManager.freeAllGPs();
 
 	try
 	{
@@ -101,10 +96,11 @@ void		ParticleSystem::init(const std::string & initFunction)
 
 void		ParticleSystem::initCamera()
 {
-	camera.matrix = Matrix4::identity.translate(Vec3(0, 0, 1));
+	camera.matrix = Matrix4::identity.translate(Vec3(0, 0, 1.735f));
 	camera.linearVelocity = Vec3::zero;
 	camera.angularVelocity = Vec3::zero;
 	camera.rotation = Quaternion::identity;
+	camera.resolution = gl.windowSize;
 }
 
 void		ParticleSystem::update()
@@ -164,7 +160,7 @@ void		ParticleSystem::updateUniforms() const
 	const ShaderProgram *	program;
 	const GravityPoint &	gp = gpManager.gravityPoints[0];
 	GLint					uniID;
-	const Matrix4			mvp = projectionMatrix * camera.matrix.inverse();
+	const Matrix4			mvp = camera.projectionMatrix * camera.matrix.inverse();
 
 	program = gl.programs["particle"];
 	program->enable();

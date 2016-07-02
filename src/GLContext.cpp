@@ -6,8 +6,7 @@
 #include "Utils.hpp"
 
 GLContext::GLContext(unsigned width, unsigned height) :
-	width(width),
-	height(height)
+	windowSize((float)width, (float)height)
 {
 	if (!glfwInit())
 		Utils::die("Count not init glfw.");
@@ -18,7 +17,7 @@ GLContext::GLContext(unsigned width, unsigned height) :
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(width, height, "Hello World", nullptr, nullptr);
 
 	if (!window)
 	{
@@ -59,12 +58,17 @@ void				GLContext::render(void * ptr) const
 
 void				GLContext::resizeWindow(GLFWwindow * window, int width, int height)
 {
-	GLContext &			gl = ParticleSystem::instance().gl;
-
-	gl.width = width;
-	gl.height = height;
+	ParticleSystem &	ps = ParticleSystem::instance();
+	Camera &			camera = ps.camera;
+	GLContext &			gl = ps.gl;
+	Vec2				resolution((float)width, (float)height);
 
 	glViewport(0, 0, width, height);
+
+	gl.windowSize = resolution;
+	camera.resolution = resolution;
+	camera.updateProjectionMatrix();
+
 }
 
 std::ostream &		operator<<(std::ostream & os, const GLContext & gl)

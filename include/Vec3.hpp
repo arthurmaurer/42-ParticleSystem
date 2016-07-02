@@ -4,6 +4,7 @@
 #include <iostream>
 
 class Quaternion;
+class Vec4;
 
 class Vec3
 {
@@ -23,6 +24,7 @@ public:
 	Vec3();
 	Vec3(const Vec3 & src);
 	Vec3(float x, float y, float z);
+	Vec3(const Vec4 & src);
 
 	Vec3 &	operator=(const Vec3 & rhs);
 	Vec3 &	operator=(float scalar);

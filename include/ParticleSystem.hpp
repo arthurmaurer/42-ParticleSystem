@@ -24,11 +24,11 @@ public:
 	void			updateParticles() const;
 	void			updateUniforms() const;
 	void			togglePause();
+	Vec3			screenToWorldCoord(const Vec3 & screenPosition) const;
 
 	CLContext &			cl;
 	GLContext &			gl;
 	cl_uint				particleCount;
-	Matrix4				projectionMatrix;
 	Camera				camera;
 	GravityPointManager	gpManager;
 

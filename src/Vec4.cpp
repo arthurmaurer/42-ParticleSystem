@@ -2,12 +2,13 @@
 #include <cmath>
 
 #include "Vec4.hpp"
+#include "Vec3.hpp"
 
 Vec4::Vec4() :
-	w(0),
 	x(0),
 	y(0),
-	z(0)
+	z(0),
+	w(0)
 {}
 
 Vec4::Vec4(const Vec4 & src)
@@ -15,11 +16,18 @@ Vec4::Vec4(const Vec4 & src)
 	*this = src;
 }
 
-Vec4::Vec4(float wVal, float xVal, float yVal, float zVal) :
-	w(wVal),
+Vec4::Vec4(float xVal, float yVal, float zVal, float wVal) :
 	x(xVal),
 	y(yVal),
-	z(zVal)
+	z(zVal),
+	w(wVal)
+{}
+
+Vec4::Vec4(const Vec3 & src, float w) :
+	x(src.x),
+	y(src.y),
+	z(src.z),
+	w(w)
 {}
 
 Vec4 &	Vec4::operator=(const Vec4 & rhs)
@@ -186,11 +194,10 @@ std::ostream &	operator<<(std::ostream & os, const Vec4 & rhs)
 {
 	os
 		<< "Vec4("
-		<< rhs.w << ", "
-		<< rhs.x << ", "
-		<< rhs.y << ", "
-		<< rhs.z << ")"
-		;
+		<< "x: " << rhs.x << ", "
+		<< "y: " << rhs.y << ", "
+		<< "z: " << rhs.z << ", "
+		<< "w: " << rhs.w << ")";
 
 	return os;
 }

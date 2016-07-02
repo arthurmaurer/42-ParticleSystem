@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "Vec3.hpp"
+#include "Vec4.hpp"
 #include "Quaternion.hpp"
 
 Vec3 Vec3::zero = Vec3(0, 0, 0);
@@ -28,6 +29,12 @@ Vec3::Vec3(float xVal, float yVal, float zVal) :
 	x(xVal),
 	y(yVal),
 	z(zVal)
+{}
+
+Vec3::Vec3(const Vec4 & src) :
+	x(src.x),
+	y(src.y),
+	z(src.z)
 {}
 
 Vec3 &	Vec3::operator=(const Vec3 & rhs)

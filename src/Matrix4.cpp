@@ -6,6 +6,7 @@
 #include "Matrix4.hpp"
 #include "Quaternion.hpp"
 #include "Vec3.hpp"
+#include "Vec4.hpp"
 
 const Matrix4		Matrix4::zero(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 const Matrix4		Matrix4::identity(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
@@ -78,6 +79,27 @@ Matrix4		Matrix4::operator*(const Matrix4 & rhs) const
 	return result;
 }
 
+Vec4		Matrix4::operator*(const Vec4 & vec) const
+{
+	Vec4	result;
+
+	result.x = data[0] * vec.x + data[1] * vec.y + data[2] * vec.z + data[3] * vec.w;
+	result.y = data[4] * vec.x + data[5] * vec.y + data[6] * vec.z + data[7] * vec.w;
+	result.z = data[8] * vec.x + data[9] * vec.y + data[10] * vec.z + data[11] * vec.w;
+	result.w = data[12] * vec.x + data[13] * vec.y + data[14] * vec.z + data[15] * vec.w;
+
+	return result;
+}
+
+Vec3		Matrix4::operator*(const Vec3 & vec) const
+{
+	Vec4	result;
+
+	result = *this * Vec4(vec, 1.0f);
+
+	return Vec3(result);
+}
+
 Matrix4 &	Matrix4::operator*=(const Matrix4 & rhs)
 {
 	if (&rhs == this)
@@ -85,6 +107,11 @@ Matrix4 &	Matrix4::operator*=(const Matrix4 & rhs)
 
 	*this = *this * rhs;
 	return *this;
+}
+
+float		Matrix4::operator[](const unsigned index) const
+{
+	return data[index];
 }
 
 Matrix4		Matrix4::translate(const Vec3 & amount) const

@@ -148,9 +148,9 @@ int		main()
 
 	config["platform"].s = "NVIDIA CUDA";
 	config["device"].s = "GeForce GTX 720M";
-	config["particleCount"].u = 100000;
+	config["particleCount"].u = 1000000;
 
-	GLContext		gl(600, 600);
+	GLContext		gl(1000, 1000);
 	std::pair<cl::Platform, cl::Device>		clInfos = selectDevice("", "");
 	CLContext		cl(clInfos.first, clInfos.second);
 
