@@ -15,11 +15,17 @@ CLContext::CLContext(cl::Platform & platform, cl::Device & device) :
 	device(device)
 {
 	cl_context_properties	properties[] = {
-		CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
-		CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
-		CL_CONTEXT_PLATFORM, (cl_context_properties)platform(),
-		0
-	};
+		#ifdef _WIN32
+			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
+			CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
+			CL_CONTEXT_PLATFORM, (cl_context_properties)platform(),
+			0
+		#endif
+		#ifdef __APPLE__
+			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+			0
+		#endif
+		};
 
 	try
 	{
