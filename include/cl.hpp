@@ -1,6 +1,10 @@
 
+#ifndef __CL_ENABLE_EXCEPTIONS
+	#define __CL_ENABLE_EXCEPTIONS
+#endif
+
 #ifdef __APPLE__
-    #include "osxcl.hpp"
+    #include "closx.hpp"
 #else
     #include <CL/cl.hpp>
 #endif
