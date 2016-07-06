@@ -2,7 +2,7 @@
 #pragma once
 
 #include <string>
-#include <CL/cl.hpp>
+#include "cl.hpp"
 
 #ifndef M_PI
 # define M_PI	3.14159265358979323846
@@ -22,12 +22,12 @@ public:
 	static void			die(const char * format, ...);
 	static void			die(const char * message, const cl::Error & e);
 
-	static float	rad(float deg);
-	static Vec3		rad(const Vec3 & deg);
-	static float	deg(float rad);
-	static Vec3		deg(const Vec3 & rad);
+	static float		rad(float deg);
+	static Vec3			rad(const Vec3 & deg);
+	static float		deg(float rad);
+	static Vec3			deg(const Vec3 & rad);
 
-	static float	clamp(float value, float min, float max);
+	static float		clamp(float value, float min, float max);
 
-	static Vec3		getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal);
+	static Vec3			getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal);
 };

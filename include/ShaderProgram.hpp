@@ -5,7 +5,8 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <CL/cl.hpp>
+
+#include "cl.hpp"
 
 class Shader;
 

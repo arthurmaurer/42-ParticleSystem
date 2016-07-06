@@ -1,11 +1,11 @@
 
-#include <CL/cl.hpp>
 #include <vector>
 
 #if _WIN32
 	#include <windows.h>
 #endif
 
+#include "cl.hpp"
 #include "CLContext.hpp"
 #include "GLContext.hpp"
 #include "Utils.hpp"
@@ -42,7 +42,7 @@ CLContext::~CLContext()
 
 void			CLContext::addSource(const std::string & code)
 {
-	sources.push_back({ _strdup(code.c_str()), code.size() });
+	sources.push_back({ strdup(code.c_str()), code.size() });
 }
 
 void			CLContext::buildProgram()

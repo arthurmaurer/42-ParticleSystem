@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <CL/cl.hpp>
+#include <cl.hpp>
 #include <iostream>
 #include <map>
 

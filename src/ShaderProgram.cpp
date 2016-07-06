@@ -88,12 +88,12 @@ void	ShaderProgram::loadUniform(const std::string & name, bool value) const
 
 void	ShaderProgram::loadUniform(const std::string & name, const cl_float2 & vec) const
 {
-	glUniform2f(uniforms.at(name), vec.x, vec.y);
+	glUniform2f(uniforms.at(name), vec.s[0], vec.s[1]);
 }
 
 void	ShaderProgram::loadUniform(const std::string & name, const cl_float4 & vec) const
 {
-	glUniform4f(uniforms.at(name), vec.w, vec.x, vec.y, vec.z);
+	glUniform4f(uniforms.at(name), vec.s[3], vec.s[0], vec.s[1], vec.s[2]);
 }
 
 void	ShaderProgram::enable() const
