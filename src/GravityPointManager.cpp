@@ -21,12 +21,12 @@ GravityPoint *	GravityPointManager::getFreeGP()
 
 bool			GravityPointManager::isGPFree(const GravityPoint & gp) const
 {
-	return (gp.w != 0);
+	return (gp.s[3] != 0);
 }
 
 void			GravityPointManager::freeGP(GravityPoint & gp)
 {
-	gp.w = 0;
+	gp.s[3] = 0;
 }
 
 void			GravityPointManager::freeAllGPs()

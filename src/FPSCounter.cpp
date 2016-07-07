@@ -41,11 +41,10 @@ FPSCounter::timePoint	FPSCounter::_now()
 
 FPSCounter::KeyTimes	FPSCounter::_getKeyTimes()
 {
-	KeyTimes	keyTimes = { 0, 0, 0 };
+	KeyTimes	keyTimes = { 0, 0, 0, 0 };
 	timePoint	oldest = timePoint::max();
 	timePoint	oldest2 = timePoint::max();
 	timePoint	youngest = timePoint::min();
-	size_t		i = 0;
 
 	for (size_t i = 0; i < _timeCount; ++i)
 	{

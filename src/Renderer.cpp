@@ -12,9 +12,6 @@
 
 void		Renderer::render(const ParticleSystem & ps)
 {
-	CLContext &			cl = ps.cl;
-	GLContext &			gl = ps.gl;
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	Renderer::_renderParticles(ps);

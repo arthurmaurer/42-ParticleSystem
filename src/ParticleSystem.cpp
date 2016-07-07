@@ -166,7 +166,7 @@ void		ParticleSystem::updateUniforms() const
 	program = gl.programs["particle"];
 	program->enable();
 	uniID = glGetUniformLocation(program->id, "gp");
-	glUniform4f(uniID, gp.x, gp.y, gp.z, gp.w);
+	glUniform4f(uniID, gp.s[0], gp.s[1], gp.s[2], gp.s[3]);
 	uniID = glGetUniformLocation(program->id, "mvp");
 	glUniformMatrix4fv(uniID, 1, GL_FALSE, mvp.data);
 	program->disable();
@@ -256,13 +256,13 @@ void		ParticleSystem::_configureGPBuffer()
 void		ParticleSystem::_createShaderPrograms()
 {
 	gl.programs["particle"] = new ShaderProgram({
-		&Shader(GL_VERTEX_SHADER, "shader/particle_vertex.glsl"),
-		&Shader(GL_FRAGMENT_SHADER, "shader/particle_fragment.glsl")
+		new Shader(GL_VERTEX_SHADER, "shader/particle_vertex.glsl"),
+		new Shader(GL_FRAGMENT_SHADER, "shader/particle_fragment.glsl")
 	});
 
 	gl.programs["gp"] = new ShaderProgram({
 		//&Shader(GL_GEOMETRY_SHADER, "shader/gp_geometry.glsl"),
-		&Shader(GL_VERTEX_SHADER, "shader/gp_vertex.glsl"),
-		&Shader(GL_FRAGMENT_SHADER, "shader/gp_fragment.glsl")
+		new Shader(GL_VERTEX_SHADER, "shader/gp_vertex.glsl"),
+		new Shader(GL_FRAGMENT_SHADER, "shader/gp_fragment.glsl")
 	});
 }

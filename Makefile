@@ -5,10 +5,13 @@ INCDIR = include
 
 CXX =		clang++
 CXXFLAGS =	-Wall -Werror -Wextra -std=c++11 -stdlib=libc++
-INCFLAGS =	-I$(INCDIR) -I$(HOME)/libs/glfw/include -I$(HOME)/libs/glew-1.13.0/include
-LIBFLAGS =	-lglfw3 -L$(HOME)/libs/glfw/build/src \
-			-lglew -L$(HOME)/libs/glew-1.13.0/lib/ \
-			-framework OpenCL
+INCFLAGS =	-I$(INCDIR) -I$(HOME)/.brew/include
+LIBFLAGS =	-lGLEW -lglfw3 -L$(HOME)/.brew/lib \
+			-framework OpenCL \
+			-framework Cocoa \
+			-framework OpenGL \
+			-framework IOKit \
+			-framework CoreVideo
 
 NAME = particlesystem
 
@@ -21,7 +24,7 @@ all: $(NAME)
 
 
 $(NAME): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(INCFLAGS) -o $(NAME) $^
+	$(CXX) $(CXXFLAGS) $(INCFLAGS) $(LIBFLAGS) -o $(NAME) $^
 
 build/%.o: src/%.cpp
 	mkdir -p $(dir $(subst src,build,$<))

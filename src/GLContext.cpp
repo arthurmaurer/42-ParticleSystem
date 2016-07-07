@@ -68,6 +68,7 @@ void				GLContext::resizeWindow(GLFWwindow * window, int width, int height)
 	camera.resolution = resolution;
 	camera.updateProjectionMatrix();
 
+	(void)window;
 }
 
 std::ostream &		operator<<(std::ostream & os, const GLContext & gl)
@@ -75,4 +76,6 @@ std::ostream &		operator<<(std::ostream & os, const GLContext & gl)
 	os << glGetString(GL_VERSION);
 
 	return os;
+
+	(void)gl;
 }

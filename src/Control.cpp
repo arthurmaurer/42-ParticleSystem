@@ -31,6 +31,8 @@ void	Control::onMouseMove(GLFWwindow * window, double x, double y)
 	}
 
 	Control::lastPosition = screenPosition;
+
+	(void)window;
 }
 
 void	Control::onMouseClick(GLFWwindow * window, int button, int action, int _)
@@ -57,8 +59,11 @@ void	Control::onMouseClick(GLFWwindow * window, int button, int action, int _)
 	else
 	{
 		if (button == GLFW_MOUSE_BUTTON_LEFT && currentGP != nullptr)
-			currentGP->w = 0;
+			currentGP->s[3] = 0;
 	}
+
+	(void)window;
+	(void)_;
 }
 
 void	Control::onKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods)
@@ -130,6 +135,9 @@ void	Control::onKeyboard(GLFWwindow * window, int key, int scancode, int action,
 			break;
 		}
 	}
+
+	(void)scancode;
+	(void)mods;
 }
 
 Vec3	Control::_getMouseOnControlPlane(const Vec2 & screenPosition)
@@ -143,5 +151,5 @@ Vec3	Control::_getMouseOnControlPlane(const Vec2 & screenPosition)
 
 void	Control::_setCurrentGPPosition(const Vec3 & position)
 {
-	*currentGP = { position.x, position.y, position.z, 1.f };
+	*currentGP = {{ position.x, position.y, position.z, 1.f }};
 }

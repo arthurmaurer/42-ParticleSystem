@@ -13,7 +13,7 @@
 
 static bool		isAnswerCorrect(const std::vector<std::string> & choices, const std::string & answer)
 {
-	int		n = atoi(answer.c_str());
+	unsigned	n = atoi(answer.c_str());
 	return (n > 0 && n <= choices.size());
 }
 
@@ -146,8 +146,8 @@ int		main()
 {
 	Config &	config = Config::instance();
 
-	config["platform"].s = "NVIDIA CUDA";
-	config["device"].s = "GeForce GTX 720M";
+	config["platform"].s = strdup("NVIDIA CUDA");
+	config["device"].s = strdup("GeForce GTX 720M");
 	config["particleCount"].u = 1000000;
 
 	GLContext		gl(1000, 1000);
