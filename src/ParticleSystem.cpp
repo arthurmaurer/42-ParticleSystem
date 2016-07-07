@@ -1,8 +1,8 @@
 
-#include <GL/glew.h>
 #include <cstdio>
 #include <ctime>
 
+#include "gl.hpp"
 #include "FPSCounter.hpp"
 #include "ParticleSystem.hpp"
 #include "Shader.hpp"
@@ -33,11 +33,11 @@ ParticleSystem &	ParticleSystem::instance(GLContext * glContext, CLContext * clC
 }
 
 ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_uint particleCount) :
-	gl(glContext),
 	cl(clContext),
+	gl(glContext),
 	particleCount(particleCount),
-	gpManager(GravityPointManager(3)),
-	camera(glContext.windowSize)
+	camera(glContext.windowSize),
+	gpManager(GravityPointManager(3))
 {
 	_createShaderPrograms();
 
@@ -50,6 +50,7 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 
 	gl.renderer = [&](void *data)
 	{
+		(void)data;
 		update();
 	};
 

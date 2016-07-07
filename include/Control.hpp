@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <CL/cl.hpp>
+#include "cl.hpp"
 #include "GravityPoint.hpp"
 #include "Vec3.hpp"
 #include "Vec2.hpp"

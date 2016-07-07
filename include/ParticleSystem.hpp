@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include <CL/cl.hpp>
-
+#include "cl.hpp"
 #include "GravityPointManager.hpp"
 #include "Camera.hpp"
 #include "Matrix4.hpp"

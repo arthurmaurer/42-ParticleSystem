@@ -14,22 +14,29 @@ CLContext::CLContext(cl::Platform & platform, cl::Device & device) :
 	platform(platform),
 	device(device)
 {
-	cl_context_properties	properties[] = {
-		#ifdef _WIN32
+	#ifdef _WIN32
+		cl_context_properties	properties[] = {
 			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
 			CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 			CL_CONTEXT_PLATFORM, (cl_context_properties)platform(),
 			0
-		#endif
-		#ifdef __APPLE__
+		};
+	#endif
+
+	#ifdef __APPLE__
+		CGLContextObj kCGLContext = CGLGetCurrentContext(); 
+		CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+
+		cl_context_properties	properties[] = {
 			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
 			0
-		#endif
 		};
+	#endif
 
 	try
 	{
-		context = cl::Context(device, properties);
+		std::vector<cl::Device>	devices(1, device);
+		context = cl::Context(devices, properties);
 		queue = cl::CommandQueue(context, device);
 	}
 	catch (const cl::Error & e)

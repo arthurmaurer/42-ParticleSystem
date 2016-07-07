@@ -1,9 +1,10 @@
 
 #pragma once
 
-#include <cl.hpp>
 #include <iostream>
 #include <map>
+
+#include "cl.hpp"
 
 class CLContext
 {

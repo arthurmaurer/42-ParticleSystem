@@ -1,7 +1,7 @@
 
 #include <iostream>
-#include <GL/glew.h>
 
+#include "gl.hpp"
 #include "Renderer.hpp"
 #include "ParticleSystem.hpp"
 #include "CLContext.hpp"

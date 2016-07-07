@@ -1,6 +1,5 @@
 
-#include <GL/glew.h>
-
+#include "gl.hpp"
 #include "GLContext.hpp"
 #include "ParticleSystem.hpp"
 #include "Utils.hpp"

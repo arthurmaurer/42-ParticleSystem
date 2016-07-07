@@ -1,10 +1,12 @@
 
+#include <cmath>
+
 #include "Camera.hpp"
 #include "Ray.hpp"
 
 Camera::Camera(const Vec2 & resolution) :
-	resolution(resolution),
-	matrix(Matrix4::identity)
+	matrix(Matrix4::identity),
+	resolution(resolution)
 {
 	updateProjectionMatrix();
 }

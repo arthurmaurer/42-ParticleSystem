@@ -1,6 +1,6 @@
 
 #pragma once
 
-#include <CL/cl.hpp>
+#include "cl.hpp"
 
 typedef cl_float4		GravityPoint;

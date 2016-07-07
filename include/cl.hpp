@@ -3,6 +3,8 @@
 	#define __CL_ENABLE_EXCEPTIONS
 #endif
 
+#include <GL/glew.h>
+
 #ifdef __APPLE__
     #include "closx.hpp"
 #else

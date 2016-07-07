@@ -1,11 +1,11 @@
 
 #pragma once
 
-#include <GL/glew.h>
 #include <string>
 #include <map>
 #include <vector>
 
+#include "gl.hpp"
 #include "cl.hpp"
 
 class Shader;

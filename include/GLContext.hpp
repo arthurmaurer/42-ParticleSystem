@@ -5,12 +5,9 @@
 #include <functional>
 #include <vector>
 #include <map>
-#include <GL/glew.h>
-#define GLFW_DLL
-#include <GLFW/glfw3.h>
 
+#include "gl.hpp"
 #include "Matrix4.hpp"
-
 #include "Vec2.hpp"
 
 class ShaderProgram;
