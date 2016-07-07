@@ -11,10 +11,13 @@
 #include "Config.hpp"
 #include "FPSCounter.hpp"
 #include "DeviceSelector.hpp"
+#include "ConfigParser.hpp"
 
-int		main()
+int		main(int ac, char ** av)
 {
 	Config &	config = Config::instance();
+
+	ConfigParser::parseConfig(config, ac, av);
 
 	config["platform"].s = strdup("NVIDIA CUDA");
 	config["device"].s = strdup("GeForce GTX 720M");

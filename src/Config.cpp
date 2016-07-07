@@ -1,4 +1,6 @@
 
+#include "Config.hpp"
+
 Config &			Config::instance()
 {
 	static Config *		config;
