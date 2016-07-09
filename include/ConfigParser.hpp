@@ -12,7 +12,8 @@ public:
 	enum	OptionType
 	{
 		String,
-		Integer
+		Integer,
+		UInteger
 	};
 
 	struct	Option

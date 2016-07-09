@@ -13,24 +13,47 @@
 #include "DeviceSelector.hpp"
 #include "ConfigParser.hpp"
 
+static void	initConfig(Config & config)
+{
+	config["platform"].s = nullptr;
+	config["device"].s = nullptr;
+	config["nparticles"].u = 0;
+}
+
+static CLSupportInfo	getSupportInfo(Config & config)
+{
+	std::string		platformName;
+	std::string		deviceName;
+	CLSupportInfo	clInfos;
+
+	if (config["platform"].s != nullptr)
+		platformName = config["platform"].s;
+
+	if (config["device"].s != nullptr)
+		deviceName = config["device"].s;
+
+	clInfos = DeviceSelector::selectDevice(platformName, deviceName);
+
+	return clInfos;
+}
+
 int		main(int ac, char ** av)
 {
 	Config &	config = Config::instance();
-
+	initConfig(config);
 	ConfigParser::parseConfig(config, ac, av);
 
-	config["platform"].s = strdup("NVIDIA CUDA");
-	config["device"].s = strdup("GeForce GTX 720M");
-	config["particleCount"].u = 3000000;
+	if (config["nparticles"].u == 0)
+		Utils::die("Error: You must precise the number of particles with -nparticles.\n");
 
 	GLContext		gl(1000, 1000);
-	CLSupportInfo	clInfos = DeviceSelector::selectDevice("Apple", "GeForce GTX 660M");
+	CLSupportInfo	clInfos = getSupportInfo(config);
 	CLContext		cl(clInfos.platform, clInfos.device);
 
 	std::cout << gl << std::endl;
 	std::cout << cl << std::endl;
 
-	ParticleSystem &	ps = ParticleSystem::instance(&gl, &cl, config["particleCount"].u);
+	ParticleSystem &	ps = ParticleSystem::instance(&gl, &cl, config["nparticles"].u);
 	ps.init("initialize_cube");
 
 	FPSCounter::start();

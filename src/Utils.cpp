@@ -32,7 +32,6 @@ void		Utils::die(const char * format, ...)
 	vprintf(format, args);
 	va_end(args);
 
-	system("pause");
 	exit(EXIT_FAILURE);
 }
 

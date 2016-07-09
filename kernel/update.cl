@@ -1,13 +1,14 @@
 
 #define GRAVITY_POINTS_MAX		3
-#define GRAVITY_MAX				2.0f
-#define MINIMUM_VELOCITY		0.05f
+#define GRAVITY_POINTS_FORCE	3
+#define GRAVITY_MAX				500.0f
+#define MINIMUM_VELOCITY		0.2f
 
 float3			get_gp_effect(global Particle * particle, global GravityPoint * gp)
 {
 	float3	direction = gp->xyz - particle->position.xyz;
 	float	distance = length(direction);
-	float3	velocity = normalize(direction) * (1.f / (distance * 3));
+	float3	velocity = normalize(direction) * (1.f / (distance * 3)) * GRAVITY_POINTS_FORCE;
 
 	float scalarVelocity = length(velocity);
 
@@ -41,7 +42,7 @@ void kernel		update_particles(global Particle * particles, global GravityPoint *
 	if (length(particle->velocity) > MINIMUM_VELOCITY)
 		particle->velocity /= 1.04f;
 
-	particle->velocity += (float4)(get_gravitational_velocity(particle, gps), 0) * (deltaTime / 16);
+	particle->velocity += (float4)(get_gravitational_velocity(particle, gps), 0);
 
-	particle->position += particle->velocity / 3000.f * deltaTime;
+	particle->position += particle->velocity * 0.001f;
 }

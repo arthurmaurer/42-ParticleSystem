@@ -11,22 +11,24 @@ void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 	std::vector<ConfigParser::Option>	options = {
 		{ "platform", String },
 		{ "device", String },
-		{ "particles", Integer }
+		{ "nparticles", UInteger }
 	};
 
-	for (int i = 1; i < ac; ++i)
+	for (int keyIndex = 1; keyIndex < ac; ++keyIndex)
 	{
-		std::string	optionName = std::string(av[i]).substr(1);
+		std::string	optionName = std::string(av[keyIndex]).substr(1);
 
 		if (!_findOption(options, optionName, option))
 			Utils::die("Option %s doesn't exist\n", optionName.c_str());
 
-		if (i + 1 >= ac)
+		int	valueIndex = keyIndex + 1;
+
+		if (valueIndex >= ac)
 			Utils::die("No value for option %s\n", optionName.c_str());
 
-		_writeValue(config, option, av[i + i]);
+		_writeValue(config, option, av[valueIndex]);
 
-		++i;
+		++keyIndex;
 	}
 }
 
@@ -50,14 +52,20 @@ bool	ConfigParser::_findOption(
 
 void	ConfigParser::_writeValue(Config & config, const Option & option, const std::string & value)
 {
+	Config::Value &	entry = config[option.name];
+
+	std::cout << option.name << "   " << value << std::endl;
+
 	switch (option.type)
 	{
 		case String:
+			entry.s = strdup(value.c_str());
 			break;
 		case Integer:
+			entry.i = atoi(value.c_str());
+			break;
+		case UInteger:
+			entry.u = static_cast<unsigned>(atoi(value.c_str()));
 			break;
 	}
-
-	(void)config;
-	(void)value;
 }
