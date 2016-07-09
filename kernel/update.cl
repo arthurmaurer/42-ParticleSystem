@@ -1,27 +1,26 @@
 
 #define GRAVITY_POINTS_MAX		3
 #define GRAVITY_POINTS_FORCE	3
-#define GRAVITY_MAX				500.0f
+#define GRAVITY_MAX				50.0f
 #define MINIMUM_VELOCITY		0.2f
 
-float3			get_gp_effect(global Particle * particle, global GravityPoint * gp)
+float4			get_gp_effect(Particle * particle, GravityPoint * gp)
 {
-	float3	direction = gp->xyz - particle->position.xyz;
-	float	distance = length(direction);
-	float3	velocity = normalize(direction) * (1.f / (distance * 3)) * GRAVITY_POINTS_FORCE;
-
-	float scalarVelocity = length(velocity);
+	float4	direction = *gp - particle->position;
+	float	distance = fast_length(direction);
+	float4	velocity = fast_normalize(direction) * (1.f / (distance * 3)) * GRAVITY_POINTS_FORCE;
+	float	scalarVelocity = fast_length(velocity);
 
 	if (scalarVelocity > GRAVITY_MAX)
-		velocity = normalize(velocity) * GRAVITY_MAX;
+		velocity = fast_normalize(velocity) * GRAVITY_MAX;
 
 	return velocity;
 }
 
-float3			get_gravitational_velocity(global Particle * particle, global GravityPoint * gps)
+float4			get_gravitational_velocity(Particle * particle, GravityPoint * gps)
 {
-	global GravityPoint *	gp;
-	float3					velocity = (float3)(0);
+	GravityPoint *	gp;
+	float4			velocity = (float4)(0);
 
 	for (uint i = 0; i < GRAVITY_POINTS_MAX; ++i)
 	{
@@ -34,15 +33,22 @@ float3			get_gravitational_velocity(global Particle * particle, global GravityPo
 	return velocity;
 }
 
-void kernel		update_particles(global Particle * particles, global GravityPoint * gps, float deltaTime)
+void kernel		update_particles(global Particle * particles, global const GravityPoint * gps, float deltaTime)
 {
 	int					i = get_global_id(0);
-	global Particle *	particle = particles + i;
+	Particle			cacheParticle = particles[i];
+	GravityPoint		cachedGps[GRAVITY_POINTS_MAX];
 
-	if (length(particle->velocity) > MINIMUM_VELOCITY)
-		particle->velocity /= 1.04f;
+	for (int i = 0; i < GRAVITY_POINTS_MAX; ++i)
+		cachedGps[i] = gps[i];
 
-	particle->velocity += (float4)(get_gravitational_velocity(particle, gps), 0);
+	float v = fast_length(cacheParticle.velocity);
 
-	particle->position += particle->velocity * 0.001f;
+	if (v > MINIMUM_VELOCITY && v != 0)
+		cacheParticle.velocity /= 1.04f;
+
+	cacheParticle.velocity += get_gravitational_velocity(&cacheParticle, cachedGps);
+	cacheParticle.position += cacheParticle.velocity * 0.001f;
+
+	particles[i] = cacheParticle;
 }

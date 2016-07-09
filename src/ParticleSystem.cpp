@@ -223,7 +223,7 @@ void		ParticleSystem::_configureParticleBuffer()
 	glBindVertexArray(vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_COPY);
 
 	attribID = glGetAttribLocation(programID, "inPosition");
 	glEnableVertexAttribArray(attribID);
