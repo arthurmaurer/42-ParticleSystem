@@ -54,8 +54,6 @@ void	ConfigParser::_writeValue(Config & config, const Option & option, const std
 {
 	Config::Value &	entry = config[option.name];
 
-	std::cout << option.name << "   " << value << std::endl;
-
 	switch (option.type)
 	{
 		case String:
