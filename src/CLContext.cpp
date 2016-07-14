@@ -64,12 +64,12 @@ void			CLContext::buildProgram()
 
 	try
 	{
-		program.build({ device });
+		program.build({ device }, "-cl-fast-relaxed-math -DMAC");
 	}
 	catch (const cl::Error & e)
 	{
 		(void)e;
-		Utils::die("%s\n", program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device).c_str());
+		Utils::die("Error: %s\n", program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device).c_str());
 	}
 }
 

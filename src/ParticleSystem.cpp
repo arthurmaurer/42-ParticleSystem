@@ -123,7 +123,6 @@ void		ParticleSystem::updateParticles() const
 {
 	static std::clock_t	lastTime = std::clock();
 	std::clock_t		newTime;
-	cl_float			deltaTime;
 
 	try
 	{
@@ -132,20 +131,21 @@ void		ParticleSystem::updateParticles() const
 		updateGPBuffer();
 
 		newTime = std::clock();
-		deltaTime = 1000.f * (newTime - lastTime) / CLOCKS_PER_SEC;
 		lastTime = newTime;
 
 		if (!_paused)
 		{
+			// cl_float	deltaTime = 1000.f * (newTime - lastTime) / CLOCKS_PER_SEC;
+
 			cl::Kernel	kernel(cl.program, "update_particles");
 			kernel.setArg(0, cl.vbos[0]);
 			kernel.setArg(1, cl.vbos[1]);
-			kernel.setArg(2, sizeof(cl_float), &deltaTime);
+			// kernel.setArg(2, sizeof(cl_float), &deltaTime);
 
 			glFinish();
 
 			queue.enqueueAcquireGLObjects(&cl.vbos);
-			queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(particleCount), cl::NullRange);
+			queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(particleCount / 2), cl::NDRange(1024));
 			queue.finish();
 			queue.enqueueReleaseGLObjects(&cl.vbos);
 		}
