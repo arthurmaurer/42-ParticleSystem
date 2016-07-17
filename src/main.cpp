@@ -50,10 +50,10 @@ int		main(int ac, char ** av)
 	CLSupportInfo	clInfos = getSupportInfo(config);
 	CLContext		cl(clInfos.platform, clInfos.device);
 
-	std::cout << gl << std::endl;
-	std::cout << cl << std::endl;
-
 	ParticleSystem &	ps = ParticleSystem::instance(&gl, &cl, config["nparticles"].u);
+
+	std::cout << ps << std::endl;
+
 	ps.init("initialize_cube");
 
 	FPSCounter::start();

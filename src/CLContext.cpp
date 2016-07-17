@@ -150,10 +150,9 @@ std::string		CLContext::getErrorString(cl_int error)
 std::ostream &	operator<<(std::ostream & os, const CLContext & cl)
 {
 	os
-		<< "Using platform "
+		<< "Platform: "
 		<< cl.platform.getInfo<CL_PLATFORM_NAME>()
-		<< std::endl
-		<< "Using device "
+		<< ", Device: "
 		<< cl.device.getInfo<CL_DEVICE_NAME>();
 
 	return os;

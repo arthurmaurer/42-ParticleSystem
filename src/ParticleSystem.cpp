@@ -35,9 +35,9 @@ ParticleSystem &	ParticleSystem::instance(GLContext * glContext, CLContext * clC
 ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_uint particleCount) :
 	cl(clContext),
 	gl(glContext),
-	particleCount(particleCount),
 	camera(glContext.windowSize),
-	gpManager(GravityPointManager(3))
+	gpManager(GravityPointManager(3)),
+	particleCount(particleCount)
 {
 	_createShaderPrograms();
 
@@ -47,6 +47,8 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 	cl.addSource(Utils::readFile("kernel/init.cl"));
 	cl.addSource(Utils::readFile("kernel/update.cl"));
 	cl.buildProgram();
+
+	_updateLocalAndGlobalSizes();
 
 	gl.renderer = [&](void *data)
 	{
@@ -145,7 +147,7 @@ void		ParticleSystem::updateParticles() const
 			glFinish();
 
 			queue.enqueueAcquireGLObjects(&cl.vbos);
-			queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(particleCount / 2), cl::NDRange(1024));
+			queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(globalSize), cl::NDRange(localSize));
 			queue.finish();
 			queue.enqueueReleaseGLObjects(&cl.vbos);
 		}
@@ -265,4 +267,31 @@ void		ParticleSystem::_createShaderPrograms()
 		new Shader(GL_VERTEX_SHADER, "shader/gp_vertex.glsl"),
 		new Shader(GL_FRAGMENT_SHADER, "shader/gp_fragment.glsl")
 	});
+}
+
+void		ParticleSystem::_updateLocalAndGlobalSizes()
+{
+	cl::Kernel	kernel(cl.program, "update_particles");
+	cl_int		result;
+
+	result = clGetKernelWorkGroupInfo(
+		kernel(),
+		cl.device(),
+		CL_KERNEL_WORK_GROUP_SIZE,
+		sizeof(size_t),
+		&localSize,
+		nullptr
+	);
+
+	globalSize = ((particleCount / PARTICLES_PER_KERNEL) / localSize) * localSize;
+}
+
+std::ostream &	operator<<(std::ostream & os, const ParticleSystem & ps)
+{
+	os
+		<< "OpenCL: " << ps.cl << std::endl
+		<< "OpenGL: " << ps.gl << std::endl
+		<< (ps.globalSize * PARTICLES_PER_KERNEL) << " particles" << std::endl;
+
+	return os;
 }

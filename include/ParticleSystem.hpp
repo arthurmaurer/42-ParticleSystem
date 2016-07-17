@@ -1,11 +1,15 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "cl.hpp"
 #include "GravityPointManager.hpp"
 #include "Camera.hpp"
 #include "Matrix4.hpp"
 #include "Vec3.hpp"
+
+#define PARTICLES_PER_KERNEL 2
 
 class CLContext;
 class GLContext;
@@ -27,15 +31,18 @@ public:
 
 	CLContext &			cl;
 	GLContext &			gl;
-	cl_uint				particleCount;
 	Camera				camera;
 	GravityPointManager	gpManager;
+	cl_uint				particleCount;
+	cl_uint				localSize;
+	cl_uint				globalSize;
 
 protected:
 	void			_createBuffers();
 	void			_configureParticleBuffer();
 	void			_configureGPBuffer();
 	void			_createShaderPrograms();
+	void			_updateLocalAndGlobalSizes();
 
 	bool			_paused = false;
 
@@ -43,3 +50,5 @@ private:
 	ParticleSystem(GLContext & gl, CLContext & cl, cl_uint particleCount);
 	~ParticleSystem();
 };
+
+std::ostream &	operator<<(std::ostream & os, const ParticleSystem & ps);
