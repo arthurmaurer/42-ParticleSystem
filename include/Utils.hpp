@@ -30,5 +30,8 @@ public:
 	static float		clamp(float value, float min, float max);
 	static unsigned		gcd(unsigned a, unsigned b);
 
+	static float		getTime();
+	static float		getDeltaTime();
+
 	static Vec3			getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal);
 };

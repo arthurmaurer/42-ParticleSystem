@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cstdarg>
 #include <cstdio>
+#include <sys/time.h>
 
 #include "Utils.hpp"
 #include "Vec3.hpp"
@@ -83,6 +84,30 @@ unsigned	Utils::gcd(unsigned a, unsigned b)
 		return b;
 
 	return Utils::gcd(b, remainder);
+}
+
+float		Utils::getTime()
+{
+	static struct timeval	startTime;
+	struct timeval			timeofday;
+
+	gettimeofday(&timeofday, nullptr);
+
+	if (startTime.tv_sec == 0)
+		startTime = timeofday;
+
+	return ((timeofday.tv_sec - startTime.tv_sec) + (timeofday.tv_usec - startTime.tv_usec) / 1000000.f);
+}
+
+float		Utils::getDeltaTime()
+{
+	static float	oldTime;
+	float			newTime = Utils::getTime();
+	float			deltaTime = newTime - oldTime;
+
+	oldTime = newTime;
+
+	return deltaTime;
 }
 
 Vec3		Utils::getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal)

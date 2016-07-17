@@ -1,6 +1,7 @@
 
 #include <cstdio>
 #include <ctime>
+#include <sys/time.h>
 
 #include "gl.hpp"
 #include "FPSCounter.hpp"
@@ -123,26 +124,20 @@ void		ParticleSystem::updateGPBuffer() const
 
 void		ParticleSystem::updateParticles() const
 {
-	static std::clock_t	lastTime = std::clock();
-	std::clock_t		newTime;
-
+	float	deltaTime = Utils::getDeltaTime();
+	
 	try
 	{
 		cl::CommandQueue &	queue = cl.queue;
 
 		updateGPBuffer();
 
-		newTime = std::clock();
-		lastTime = newTime;
-
 		if (!_paused)
 		{
-			// cl_float	deltaTime = 1000.f * (newTime - lastTime) / CLOCKS_PER_SEC;
-
 			cl::Kernel	kernel(cl.program, "update_particles");
 			kernel.setArg(0, cl.vbos[0]);
 			kernel.setArg(1, cl.vbos[1]);
-			// kernel.setArg(2, sizeof(cl_float), &deltaTime);
+			kernel.setArg(2, sizeof(cl_float), &deltaTime);
 
 			glFinish();
 
