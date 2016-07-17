@@ -63,7 +63,7 @@ void			update_particle(Particle * particle, GravityPoint * gps)
 	particle->position += particle->velocity * 0.001f;
 }
 
-void kernel		update_particles(global Particle * particles, global GravityPoint * gps/*, float deltaTime*/)
+void kernel		update_particles(global Particle * particles, global GravityPoint * gps)
 {
 	int					id = get_global_id(0) * PARTICLES_PER_WORK_ITEM;
 	Particle			cached_particles[PARTICLES_PER_WORK_ITEM];

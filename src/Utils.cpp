@@ -75,6 +75,16 @@ float		Utils::clamp(float value, float min, float max)
 	return value;
 }
 
+unsigned	Utils::gcd(unsigned a, unsigned b)
+{
+	unsigned remainder = a % b;
+
+	if (remainder == 0)
+		return b;
+
+	return Utils::gcd(b, remainder);
+}
+
 Vec3		Utils::getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal)
 {
 	float	distance = planeNormal.dot(planePosition - ray.origin) / planeNormal.dot(ray.direction);

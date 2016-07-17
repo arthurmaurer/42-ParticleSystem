@@ -273,17 +273,22 @@ void		ParticleSystem::_updateLocalAndGlobalSizes()
 {
 	cl::Kernel	kernel(cl.program, "update_particles");
 	cl_int		result;
+	size_t		maxLocalSize;
 
 	result = clGetKernelWorkGroupInfo(
 		kernel(),
 		cl.device(),
 		CL_KERNEL_WORK_GROUP_SIZE,
 		sizeof(size_t),
-		&localSize,
+		&maxLocalSize,
 		nullptr
 	);
 
-	globalSize = ((particleCount / PARTICLES_PER_KERNEL) / localSize) * localSize;
+	if (result != CL_SUCCESS)
+		Utils::die("Could not get CL_KERNEL_WORK_GROUP_SIZE (%s)\n", CLContext::getErrorString(result).c_str());
+
+	globalSize = particleCount / PARTICLES_PER_KERNEL;
+	localSize = Utils::gcd(globalSize, maxLocalSize);
 }
 
 std::ostream &	operator<<(std::ostream & os, const ParticleSystem & ps)
@@ -291,7 +296,9 @@ std::ostream &	operator<<(std::ostream & os, const ParticleSystem & ps)
 	os
 		<< "OpenCL: " << ps.cl << std::endl
 		<< "OpenGL: " << ps.gl << std::endl
-		<< (ps.globalSize * PARTICLES_PER_KERNEL) << " particles" << std::endl;
+		<< ps.particleCount << " particles" << std::endl
+		<< "Global size: " << ps.globalSize << std::endl
+		<< (ps.globalSize / ps.localSize) << " groups of " << ps.localSize << " units computing " << PARTICLES_PER_KERNEL << " particles each" << std::endl;
 
 	return os;
 }

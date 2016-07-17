@@ -28,6 +28,7 @@ public:
 	static Vec3			deg(const Vec3 & rad);
 
 	static float		clamp(float value, float min, float max);
+	static unsigned		gcd(unsigned a, unsigned b);
 
 	static Vec3			getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal);
 };

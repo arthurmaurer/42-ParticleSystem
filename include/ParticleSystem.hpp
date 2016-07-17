@@ -33,9 +33,10 @@ public:
 	GLContext &			gl;
 	Camera				camera;
 	GravityPointManager	gpManager;
-	cl_uint				particleCount;
-	cl_uint				localSize;
-	cl_uint				globalSize;
+	size_t				particleCount;
+	size_t				particlesPerKernel;
+	size_t				localSize;
+	size_t				globalSize;
 
 protected:
 	void			_createBuffers();

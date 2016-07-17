@@ -69,7 +69,7 @@ void			CLContext::buildProgram()
 	catch (const cl::Error & e)
 	{
 		(void)e;
-		Utils::die("Error: %s\n", program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device).c_str());
+		Utils::die("Build error: %s\n", program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device).c_str());
 	}
 }
 
