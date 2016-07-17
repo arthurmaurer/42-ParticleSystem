@@ -1,7 +1,7 @@
 
 #define GRAVITY_POINTS_MAX		3
 #define GRAVITY_POINTS_FORCE	3
-#define GRAVITY_MAX				50.0f
+#define GRAVITY_MAX				3.0f
 #define MINIMUM_VELOCITY		0.2f
 #define PARTICLES_PER_WORK_ITEM	2
 
@@ -52,7 +52,7 @@ void			push_cached_particles(global Particle * particles, Particle * cached_part
 		particles[offset + i] = cached_particles[i];
 }
 
-void			update_particle(Particle * particle, GravityPoint * gps)
+void			update_particle(Particle * particle, GravityPoint * gps, float deltaTime)
 {
 	float v = fast_length(particle->velocity);
 
@@ -60,7 +60,7 @@ void			update_particle(Particle * particle, GravityPoint * gps)
 		particle->velocity /= 1.04f;
 
 	particle->velocity += get_gravitational_velocity(particle, gps);
-	particle->position += particle->velocity * 0.001f;
+	particle->position += particle->velocity * deltaTime;
 }
 
 void kernel		update_particles(global Particle * particles, global GravityPoint * gps, float deltaTime)
@@ -73,7 +73,7 @@ void kernel		update_particles(global Particle * particles, global GravityPoint *
 	cache_particles(cached_particles, particles, id, PARTICLES_PER_WORK_ITEM);
 
 	for (uint i = 0; i < PARTICLES_PER_WORK_ITEM; ++i)
-		update_particle(cached_particles + i, cached_gps);
+		update_particle(cached_particles + i, cached_gps, deltaTime);
 
 	push_cached_particles(particles, cached_particles, id, PARTICLES_PER_WORK_ITEM);
 }
