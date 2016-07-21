@@ -4,12 +4,15 @@
 #define GRAVITY_MAX				2.5f
 #define MINIMUM_VELOCITY		0.2f
 #define PARTICLES_PER_WORK_ITEM	2
+#define PARTICLE_DECELERATION	0.9f
 
 float4			get_gp_effect(Particle * particle, GravityPoint * gp)
 {
-	float4	direction = *gp - particle->position;
-	float	distance = fast_length(direction);
-	float4	velocity = fast_normalize(direction) * (0.333333333f / distance) * GRAVITY_POINTS_FORCE;
+	float4	particleToGP = *gp - particle->position;
+	float	distance = fast_length(particleToGP);
+	float4	direction = particleToGP / distance;
+	float4	velocity = direction * (0.333333333f / distance) * GRAVITY_POINTS_FORCE;
+
 	float	scalar_velocity = fast_length(velocity);
 
 	if (scalar_velocity > GRAVITY_MAX)
@@ -56,8 +59,8 @@ void			update_particle(Particle * particle, GravityPoint * gps, float delta_time
 {
 	float v = fast_length(particle->velocity);
 
-	if (v > MINIMUM_VELOCITY && v != 0)
-		particle->velocity /= 1.04f;
+	if (v != 0 && v > MINIMUM_VELOCITY)
+		particle->velocity *= PARTICLE_DECELERATION;
 
 	particle->velocity += get_gravitational_velocity(particle, gps);
 	particle->position += particle->velocity * delta_time;
