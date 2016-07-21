@@ -7,8 +7,8 @@ in	vec3	passPosition;
 
 out	vec4	outColor;
 
-#define	COLOR_MAX	vec4(1, 1, 1, 0.1)
-#define	COLOR_MIN	vec4(1, 0.6, 0.6, 0.1)
+#define	COLOR_MAX	vec4(1.0, 1.0, 1.0, 0.1)
+#define	COLOR_MIN	vec4(1.0, 0.6, 0.6, 0.1)
 
 void	main()
 {
