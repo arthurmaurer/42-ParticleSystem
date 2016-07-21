@@ -295,7 +295,7 @@ std::ostream &	operator<<(std::ostream & os, const ParticleSystem & ps)
 		<< "OpenGL: " << ps.gl << std::endl
 		<< ps.particleCount << " particles" << std::endl
 		<< "Global size: " << ps.globalSize << std::endl
-		<< (ps.globalSize / ps.localSize) << " groups of " << ps.localSize << " units computing " << PARTICLES_PER_KERNEL << " particles each" << std::endl;
+		<< (ps.globalSize / ps.localSize) << " groups of " << ps.localSize << " items computing " << PARTICLES_PER_KERNEL << " particles each" << std::endl;
 
 	return os;
 }

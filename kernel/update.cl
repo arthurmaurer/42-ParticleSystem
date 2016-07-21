@@ -52,7 +52,7 @@ void			push_cached_particles(global Particle * particles, Particle * cached_part
 		particles[offset + i] = cached_particles[i];
 }
 
-void			update_particle(Particle * particle, GravityPoint * gps, float deltaTime)
+void			update_particle(Particle * particle, GravityPoint * gps, float delta_time)
 {
 	float v = fast_length(particle->velocity);
 
@@ -60,10 +60,10 @@ void			update_particle(Particle * particle, GravityPoint * gps, float deltaTime)
 		particle->velocity /= 1.04f;
 
 	particle->velocity += get_gravitational_velocity(particle, gps);
-	particle->position += particle->velocity * deltaTime;
+	particle->position += particle->velocity * delta_time;
 }
 
-void kernel		update_particles(global Particle * particles, global GravityPoint * gps, float deltaTime)
+void kernel		update_particles(global Particle * particles, global GravityPoint * gps, float delta_time)
 {
 	int					id = get_global_id(0) * PARTICLES_PER_WORK_ITEM;
 	Particle			cached_particles[PARTICLES_PER_WORK_ITEM];
@@ -73,7 +73,7 @@ void kernel		update_particles(global Particle * particles, global GravityPoint *
 	cache_particles(cached_particles, particles, id, PARTICLES_PER_WORK_ITEM);
 
 	for (uint i = 0; i < PARTICLES_PER_WORK_ITEM; ++i)
-		update_particle(cached_particles + i, cached_gps, deltaTime);
+		update_particle(cached_particles + i, cached_gps, delta_time);
 
 	push_cached_particles(particles, cached_particles, id, PARTICLES_PER_WORK_ITEM);
 }
