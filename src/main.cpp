@@ -56,8 +56,6 @@ int		main(int ac, char ** av)
 
 	ps.init("initialize_cube");
 
-	FPSCounter::start();
-
 	gl.render(&ps);
 
 	return EXIT_SUCCESS;

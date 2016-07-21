@@ -24,7 +24,7 @@ public:
 	void			initCamera();
 	void			update();
 	void			updateGPBuffer() const;
-	void			updateParticles() const;
+	void			updateParticles();
 	void			updateUniforms() const;
 	void			togglePause();
 	Vec3			screenToWorldCoord(const Vec3 & screenPosition) const;
@@ -37,6 +37,7 @@ public:
 	size_t				particlesPerKernel;
 	size_t				localSize;
 	size_t				globalSize;
+	float				deltaTime;
 
 protected:
 	void			_createBuffers();

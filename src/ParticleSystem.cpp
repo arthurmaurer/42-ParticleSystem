@@ -109,10 +109,14 @@ void		ParticleSystem::initCamera()
 
 void		ParticleSystem::update()
 {
+	deltaTime = Utils::getDeltaTime();
+
 	updateParticles();
 	camera.update();
 	updateUniforms();
 	Renderer::render(*this);
+
+	FPSCounter::tick(Utils::getTime());
 }
 
 void		ParticleSystem::updateGPBuffer() const
@@ -122,10 +126,8 @@ void		ParticleSystem::updateGPBuffer() const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void		ParticleSystem::updateParticles() const
+void		ParticleSystem::updateParticles()
 {
-	float	deltaTime = Utils::getDeltaTime();
-	
 	try
 	{
 		cl::CommandQueue &	queue = cl.queue;

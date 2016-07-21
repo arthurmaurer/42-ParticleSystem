@@ -17,8 +17,6 @@ void		Renderer::render(const ParticleSystem & ps)
 	Renderer::_renderParticles(ps);
 	Renderer::_renderGPs(ps);
 	Renderer::_updateWindowTitle(ps);
-
-	FPSCounter::update();
 }
 
 void		Renderer::_renderParticles(const ParticleSystem & ps)
@@ -49,9 +47,6 @@ void		Renderer::_updateWindowTitle(const ParticleSystem & ps)
 {
 	char	title[50];
 	float	fps = FPSCounter::fps;
-
-	if (fps < 0)
-		return;
 
 	sprintf(title, "%i fps", static_cast<int>(fps));
 	glfwSetWindowTitle(ps.gl.window, title);
