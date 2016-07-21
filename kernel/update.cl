@@ -1,7 +1,7 @@
 
 #define GRAVITY_POINTS_MAX		3
 #define GRAVITY_POINTS_FORCE	3
-#define GRAVITY_MAX				3.0f
+#define GRAVITY_MAX				2.5f
 #define MINIMUM_VELOCITY		0.2f
 #define PARTICLES_PER_WORK_ITEM	2
 
