@@ -9,6 +9,7 @@ void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 {
 	ConfigParser::Option				option;
 	std::vector<ConfigParser::Option>	options = {
+		{ "h", None },
 		{ "platform", String },
 		{ "device", String },
 		{ "nparticles", UInteger }
@@ -21,12 +22,17 @@ void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 		if (!_findOption(options, optionName, option))
 			Utils::die("Option %s doesn't exist\n", optionName.c_str());
 
-		int	valueIndex = keyIndex + 1;
+		if (option.type != None)
+		{
+			int	valueIndex = keyIndex + 1;
 
-		if (valueIndex >= ac)
-			Utils::die("No value for option %s\n", optionName.c_str());
+			if (valueIndex >= ac)
+				Utils::die("No value for option %s\n", optionName.c_str());
 
-		_writeValue(config, option, av[valueIndex]);
+			_writeValue(config, option, av[valueIndex]);
+		}
+		else
+			_writeValue(config, option, "");
 
 		++keyIndex;
 	}

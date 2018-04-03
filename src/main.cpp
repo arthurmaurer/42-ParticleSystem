@@ -37,14 +37,44 @@ static CLSupportInfo	getSupportInfo(Config & config)
 	return clInfos;
 }
 
+static void printUsageAndExit(char * programName)
+{
+	std::cout << 
+		"\nusage: " << programName << " -nparticles x [-platform platform_name] [-device device_name]\n"
+		"  -nparticles x   Number (x) of particles to instanciate\n"
+		"  -platform       The name of the platform to use\n"
+		"  -device         The name of the device to use\n\n"
+
+		"other options:\n"
+		"  -h              Print usage\n\n"
+
+		"controls:\n"
+		"  left click      Draggable gravity point\n"
+		"  right click     Static gravity point\n"
+		"  shift           Stack gravity points (3 max)\n"
+		"  W A S D         Camera position\n"		
+		"  Arrows          Camera angle\n"
+		"  R               Reset camera\n"
+		"  1               Rectangle initialization\n"
+		"  2               Sphere initialization\n"
+		"  space           Pause\n"
+		"  escape          Quit\n"
+	<< std::endl;
+
+	exit(0);
+}
+
 int		main(int ac, char ** av)
 {
 	Config &	config = Config::instance();
 	initConfig(config);
 	ConfigParser::parseConfig(config, ac, av);
 
+	if (config.has("h"))
+		printUsageAndExit(av[0]);
+
 	if (config["nparticles"].u == 0)
-		Utils::die("Error: You must precise the number of particles with -nparticles.\n");
+		Utils::die("Error: You must precise the number of particles with -nparticles.\nUse -h option for help.\n");
 
 	GLContext		gl(1000, 1000);
 	CLSupportInfo	clInfos = getSupportInfo(config);

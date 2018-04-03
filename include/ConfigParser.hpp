@@ -11,6 +11,7 @@ class ConfigParser
 public:
 	enum	OptionType
 	{
+		None,
 		String,
 		Integer,
 		UInteger

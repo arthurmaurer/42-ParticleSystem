@@ -109,8 +109,8 @@ cl::Device		DeviceSelector::getDevice(const cl::Platform & platform, const std::
 	if (defaultName.empty())
 	{
 		deviceID = promptChoice(
-			"Available OpenCL platforms on this computer:",
-			"Which platform do you want to use ? ",
+			"Available OpenCL devices on this computer:",
+			"Which device do you want to use ? ",
 			choices
 		);
 	}
