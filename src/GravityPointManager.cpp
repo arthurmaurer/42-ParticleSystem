@@ -1,5 +1,6 @@
 
 #include "GravityPointManager.hpp"
+#include <iostream>
 
 GravityPointManager::GravityPointManager(unsigned gpCount) :
 	gpCount(gpCount)
@@ -26,7 +27,7 @@ bool			GravityPointManager::isGPFree(const GravityPoint & gp) const
 
 void			GravityPointManager::freeGP(GravityPoint & gp)
 {
-	gp.s[3] = 0;
+	gp.s[3] = 0; // We use the "w" component to determine if the gravity point is available
 }
 
 void			GravityPointManager::freeAllGPs()

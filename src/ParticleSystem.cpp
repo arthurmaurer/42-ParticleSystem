@@ -37,7 +37,7 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 	cl(clContext),
 	gl(glContext),
 	camera(glContext.windowSize),
-	gpManager(GravityPointManager(3)),
+	gpManager(GravityPointManager(5)),
 	particleCount(particleCount)
 {
 	_createShaderPrograms();
