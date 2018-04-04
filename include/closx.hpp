@@ -22,7 +22,6 @@
  ******************************************************************************/
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wall"
-#pragma clang diagnostic ignored "-Werror"
 #pragma clang diagnostic ignored "-Wextra"
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 

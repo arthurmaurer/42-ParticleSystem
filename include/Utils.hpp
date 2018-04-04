@@ -18,6 +18,7 @@ class Ray;
 class Utils
 {
 public:
+	static void			replaceInString(std::string & str, const std::string & from, const std::string & to);
 	static std::string	readFile(const std::string & path);
 	static void			die(const char * format, ...);
 	static void			die(const char * message, const cl::Error & e);

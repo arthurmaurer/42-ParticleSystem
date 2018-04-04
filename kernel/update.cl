@@ -1,9 +1,9 @@
+#define PARTICLES_PER_WORK_ITEM	{PARTICLES_PER_WORK_ITEM}
 
 #define GRAVITY_POINTS_MAX		5
 #define GRAVITY_POINTS_FORCE	3
 #define GRAVITY_MAX				2.5f
 #define MINIMUM_VELOCITY		0.02f
-#define PARTICLES_PER_WORK_ITEM	1
 #define PARTICLE_DECELERATION	0.9f
 
 float4			get_gp_effect(Particle * particle, GravityPoint * gp)

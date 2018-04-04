@@ -44,9 +44,17 @@ ParticleSystem::ParticleSystem(GLContext & glContext, CLContext & clContext, cl_
 
 	_createBuffers();
 
-	cl.addSource(Utils::readFile("kernel/header.cl"));
-	cl.addSource(Utils::readFile("kernel/init.cl"));
-	cl.addSource(Utils::readFile("kernel/update.cl"));
+	cl.addSourcesWithParams(
+		{
+			"kernel/header.cl",
+			"kernel/init.cl",
+			"kernel/update.cl",
+		},
+		{
+			{ "{PARTICLES_PER_WORK_ITEM}", std::to_string(PARTICLES_PER_WORK_ITEM) }
+		}
+	);
+
 	cl.buildProgram();
 
 	_updateLocalAndGlobalSizes();

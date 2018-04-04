@@ -190,6 +190,19 @@ size_t			CLContext::getMaxLocalSize()
 	return std::min<size_t>(deviceMaxWorkItemSizes[0], deviceMaxWorkGroupSize);
 }
 
+void			CLContext::addSourcesWithParams(std::vector<std::string> files, std::map<std::string, std::string> params)
+{
+	for (auto file : files)
+	{
+		auto source = Utils::readFile(file);
+
+		for (auto param : params)
+			Utils::replaceInString(source, param.first, param.second);
+
+		addSource(source);
+	}
+}
+
 
 std::ostream &	operator<<(std::ostream & os, const CLContext & cl)
 {

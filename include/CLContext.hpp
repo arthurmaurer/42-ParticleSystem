@@ -23,10 +23,12 @@ public:
 	cl::Program				program;
 
 	void			addSource(const std::string & code);
+	void			addSourcesWithParams(std::vector<std::string> files, std::map<std::string, std::string> params);
 	void			buildProgram();
 	void			getClDeviceMaxWorkGroupSize(size_t * value);
 	void			getClDeviceMaxWorkItemSizes(size_t * value);
 	size_t			getMaxLocalSize();
+
 
 	static std::string	getErrorString(cl_int error);
 };

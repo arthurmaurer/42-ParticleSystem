@@ -4,7 +4,7 @@ OBJ = $(subst src,build,$(SRC:cpp=o))
 INCDIR = include
 
 CXX =		clang++
-CXXFLAGS =	-Wall -Wextra -std=c++11 -stdlib=libc++
+CXXFLAGS =	-Wall -Wextra -std=c++11 -stdlib=libc++ -Wno-switch
 INCFLAGS =	-I$(INCDIR) -I$(HOME)/.brew/include
 LIBFLAGS =	-lGLEW -lglfw3 -L$(HOME)/.brew/lib \
 			-framework OpenCL \

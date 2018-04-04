@@ -15,6 +15,9 @@ void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 		{ "nparticles", UInteger }
 	};
 
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wfor-loop-analysis"
+
 	for (int keyIndex = 1; keyIndex < ac; ++keyIndex)
 	{
 		std::string	optionName = std::string(av[keyIndex]).substr(1);
@@ -36,6 +39,8 @@ void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 
 		++keyIndex;
 	}
+
+	#pragma clang diagnostic pop
 }
 
 bool	ConfigParser::_findOption(
