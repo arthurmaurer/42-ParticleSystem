@@ -147,6 +147,50 @@ std::string		CLContext::getErrorString(cl_int error)
 	}
 }
 
+void			CLContext::getClDeviceMaxWorkGroupSize(size_t * value)
+{
+	cl_int	result;
+
+	result = clGetDeviceInfo(
+		device(),
+		CL_DEVICE_MAX_WORK_GROUP_SIZE,
+		sizeof(size_t),
+		value,
+		nullptr
+	);
+
+	if (result != CL_SUCCESS)
+		Utils::die("Could not get CL_DEVICE_MAX_WORK_GROUP_SIZE (%s)\n", CLContext::getErrorString(result).c_str());
+}
+
+void			CLContext::getClDeviceMaxWorkItemSizes(size_t * value)
+{
+	cl_int	result;
+
+	result = clGetDeviceInfo(
+		device(),
+		CL_DEVICE_MAX_WORK_ITEM_SIZES,
+		sizeof(size_t) * 3,
+		value,
+		nullptr
+	);
+
+	if (result != CL_SUCCESS)
+		Utils::die("Could not get CL_DEVICE_MAX_WORK_ITEM_SIZES (%s)\n", CLContext::getErrorString(result).c_str());
+}
+
+size_t			CLContext::getMaxLocalSize()
+{
+	size_t		deviceMaxWorkItemSizes[3];
+	size_t		deviceMaxWorkGroupSize;
+
+	getClDeviceMaxWorkItemSizes(deviceMaxWorkItemSizes);
+	getClDeviceMaxWorkGroupSize(&deviceMaxWorkGroupSize);
+
+	return std::min<size_t>(deviceMaxWorkItemSizes[0], deviceMaxWorkGroupSize);
+}
+
+
 std::ostream &	operator<<(std::ostream & os, const CLContext & cl)
 {
 	os

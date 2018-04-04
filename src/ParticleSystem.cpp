@@ -78,12 +78,17 @@ void		ParticleSystem::init(const std::string & initFunction)
 	{
 		cl::CommandQueue &	queue = cl.queue;
 		cl::Kernel			kernel(cl.program, initFunction.c_str());
+		cl_int				result;
 
 		kernel.setArg(0, cl.vbos[0]);
 		kernel.setArg(1, sizeof(cl_uint), &particleCount);
 
 		queue.enqueueAcquireGLObjects(&cl.vbos);
-		queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(particleCount), cl::NullRange);
+		result = queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(globalSize), cl::NDRange(localSize));
+
+		if (result != CL_SUCCESS)
+			Utils::die("Error while executing enqueueNDRangeKernel (%s)\n", CLContext::getErrorString(result).c_str());
+
 		queue.finish();
 		queue.enqueueReleaseGLObjects(&cl.vbos);
 	}
@@ -144,7 +149,11 @@ void		ParticleSystem::updateParticles()
 			glFinish();
 
 			queue.enqueueAcquireGLObjects(&cl.vbos);
-			queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(globalSize), cl::NDRange(localSize));
+			cl_int result = queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(globalSize), cl::NDRange(localSize));
+
+			if (result != CL_SUCCESS)
+				Utils::die("Error while executing enqueueNDRangeKernel (update) (%s)\n", CLContext::getErrorString(result).c_str());
+
 			queue.finish();
 			queue.enqueueReleaseGLObjects(&cl.vbos);
 		}
@@ -269,23 +278,15 @@ void		ParticleSystem::_createShaderPrograms()
 void		ParticleSystem::_updateLocalAndGlobalSizes()
 {
 	cl::Kernel	kernel(cl.program, "update_particles");
-	cl_int		result;
-	size_t		maxLocalSize;
+	size_t		maxLocalSize = cl.getMaxLocalSize();
+	size_t		workItemsCount = particleCount / PARTICLES_PER_WORK_ITEM;
 
-	result = clGetKernelWorkGroupInfo(
-		kernel(),
-		cl.device(),
-		CL_KERNEL_WORK_GROUP_SIZE,
-		sizeof(size_t),
-		&maxLocalSize,
-		nullptr
-	);
+	globalSize = (workItemsCount / maxLocalSize) * maxLocalSize; // multiple of the max local size
 
-	if (result != CL_SUCCESS)
-		Utils::die("Could not get CL_KERNEL_WORK_GROUP_SIZE (%s)\n", CLContext::getErrorString(result).c_str());
+	if (workItemsCount > globalSize)
+		globalSize += maxLocalSize;
 
-	globalSize = particleCount / PARTICLES_PER_KERNEL;
-	localSize = Utils::gcd(globalSize, maxLocalSize);
+	localSize = maxLocalSize;
 }
 
 std::ostream &	operator<<(std::ostream & os, const ParticleSystem & ps)
@@ -295,7 +296,7 @@ std::ostream &	operator<<(std::ostream & os, const ParticleSystem & ps)
 		<< "OpenGL: " << ps.gl << std::endl
 		<< ps.particleCount << " particles" << std::endl
 		<< "Global size: " << ps.globalSize << std::endl
-		<< (ps.globalSize / ps.localSize) << " groups of " << ps.localSize << " items computing " << PARTICLES_PER_KERNEL << " particles each" << std::endl;
+		<< (ps.globalSize / ps.localSize) << " groups of " << ps.localSize << " items computing " << PARTICLES_PER_WORK_ITEM << " particles each" << std::endl;
 
 	return os;
 }

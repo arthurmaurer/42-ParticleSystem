@@ -9,7 +9,7 @@
 #include "Matrix4.hpp"
 #include "Vec3.hpp"
 
-#define PARTICLES_PER_KERNEL 2
+#define PARTICLES_PER_WORK_ITEM 1
 
 class CLContext;
 class GLContext;

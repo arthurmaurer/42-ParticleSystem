@@ -24,6 +24,9 @@ public:
 
 	void			addSource(const std::string & code);
 	void			buildProgram();
+	void			getClDeviceMaxWorkGroupSize(size_t * value);
+	void			getClDeviceMaxWorkItemSizes(size_t * value);
+	size_t			getMaxLocalSize();
 
 	static std::string	getErrorString(cl_int error);
 };
