@@ -35,4 +35,6 @@ public:
 	static float		getDeltaTime();
 
 	static Vec3			getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition, const Vec3 & planeNormal);
+
+	static int			getTimeOfDay(struct timeval * p, void * tz);
 };

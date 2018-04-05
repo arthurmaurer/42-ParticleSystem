@@ -5,8 +5,15 @@
 #include <cstring>
 #include <cstdarg>
 #include <cstdio>
-#include <sys/time.h>
 #include <algorithm>
+
+#ifndef _WIN32
+	#include <sys/time.h>
+#endif
+
+#ifdef _WIN32
+	#include <windows.h>
+#endif
 
 #include "Utils.hpp"
 #include "Vec3.hpp"
@@ -34,7 +41,7 @@ std::string	Utils::readFile(const std::string & path)
 	std::stringstream	ss;
 
 	if (!file.good())
-		Utils::die("The script file \"%s\" cannot be opened.\n", path.c_str());
+		Utils::die("The script file \"%s\" cannot be opened (%s).\n", path.c_str(), strerror(errno));
 
 	ss << file.rdbuf();
 
@@ -107,7 +114,7 @@ float		Utils::getTime()
 	static struct timeval	startTime;
 	struct timeval			timeofday;
 
-	gettimeofday(&timeofday, nullptr);
+	getTimeOfDay(&timeofday, nullptr);
 
 	if (startTime.tv_sec == 0)
 		startTime = timeofday;
@@ -132,4 +139,32 @@ Vec3		Utils::getRayPlaneIntersection(const Ray & ray, const Vec3 & planePosition
 	Vec3	hitPoint = ray.origin + ray.direction * distance;
 
 	return hitPoint;
+}
+
+int Utils::getTimeOfDay(struct timeval* p, void* tz)
+{
+	#ifdef _WIN32
+		ULARGE_INTEGER ul; // As specified on MSDN.
+		FILETIME ft;
+
+		// Returns a 64-bit value representing the number of
+		// 100-nanosecond intervals since January 1, 1601 (UTC).
+		GetSystemTimeAsFileTime(&ft);
+
+		// Fill ULARGE_INTEGER low and high parts.
+		ul.LowPart = ft.dwLowDateTime;
+		ul.HighPart = ft.dwHighDateTime;
+		// Convert to microseconds.
+		ul.QuadPart /= 10ULL;
+		// Remove Windows to UNIX Epoch delta.
+		ul.QuadPart -= 11644473600000000ULL;
+		// Modulo to retrieve the microseconds.
+		p->tv_usec = (long)(ul.QuadPart % 1000000LL);
+		// Divide to retrieve the seconds.
+		p->tv_sec = (long)(ul.QuadPart / 1000000LL);
+
+		return 0;
+	#else
+		return gettimeofday(p, tz);
+	#endif
 }

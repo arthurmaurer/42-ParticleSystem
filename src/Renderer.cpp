@@ -10,6 +10,10 @@
 #include "FPSCounter.hpp"
 #include "ShaderProgram.hpp"
 
+#ifdef _WIN32
+	#define sprintf sprintf_s
+#endif
+
 void		Renderer::render(const ParticleSystem & ps)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

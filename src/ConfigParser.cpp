@@ -5,6 +5,10 @@
 #include "Config.hpp"
 #include "Utils.hpp"
 
+#ifdef _WIN32
+	#define strdup _strdup
+#endif
+
 void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 {
 	ConfigParser::Option				option;
@@ -15,8 +19,10 @@ void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 		{ "nparticles", UInteger }
 	};
 
-	#pragma clang diagnostic push
-	#pragma clang diagnostic ignored "-Wfor-loop-analysis"
+	#ifdef __APPLE__
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wfor-loop-analysis"
+	#endif
 
 	for (int keyIndex = 1; keyIndex < ac; ++keyIndex)
 	{
@@ -40,7 +46,9 @@ void	ConfigParser::parseConfig(Config & config, int ac, char ** av)
 		++keyIndex;
 	}
 
-	#pragma clang diagnostic pop
+	#ifdef __APPLE__
+		#pragma clang diagnostic pop
+	#endif
 }
 
 bool	ConfigParser::_findOption(

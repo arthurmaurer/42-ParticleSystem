@@ -3,6 +3,11 @@
 	#define __CL_ENABLE_EXCEPTIONS
 #endif
 
+
+#ifndef GLEW_STATIC
+	#define GLEW_STATIC
+#endif
+
 #include <GL/glew.h>
 
 #ifdef __APPLE__

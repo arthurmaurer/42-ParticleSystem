@@ -5,10 +5,16 @@
 	#include <windows.h>
 #endif
 
+#include <algorithm>
+
 #include "cl.hpp"
 #include "CLContext.hpp"
 #include "GLContext.hpp"
 #include "Utils.hpp"
+
+#ifdef _WIN32
+	#define strdup _strdup
+#endif
 
 CLContext::CLContext(cl::Platform & platform, cl::Device & device) :
 	platform(platform),

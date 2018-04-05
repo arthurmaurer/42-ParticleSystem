@@ -1,7 +1,6 @@
 
 #include <cstdio>
 #include <ctime>
-#include <sys/time.h>
 
 #include "gl.hpp"
 #include "FPSCounter.hpp"

@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <algorithm>
 
 #include "Utils.hpp"
 #include "DeviceSelector.hpp"
